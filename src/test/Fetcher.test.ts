@@ -1,7 +1,11 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import {
+  createFetchResponse,
+  createTestAfterPlugin,
+  createTestBeforePlugin,
+} from '@/test/testUtils';
+
 import { Fetcher } from '@/lib/Fetcher.js';
-import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
-import { Response } from 'cross-fetch';
-import { BasePlugin } from '@/lib/plugins';
 
 const mockFetch = vi.fn();
 
@@ -10,50 +14,6 @@ const mockFetch = vi.fn();
 const mockResponseData = {
   message: 'Hello, world!',
 };
-
-class MockedResponse extends Response {
-  constructor(body: BodyInit, init?: ResponseInit) {
-    super(body, init);
-  }
-}
-
-function createFetchResponse(body: object, init?: ResponseInit) {
-  return new MockedResponse(JSON.stringify(body), init);
-}
-
-class TestBeforePlugin extends BasePlugin {
-  async beforeRequest(url: string, options: RequestInit) {
-    return { headers: { Authorization: 'Bearer token' } };
-  }
-}
-
-class TestAfterPlugin extends BasePlugin {
-  async afterResponse(response: Response) {
-    return Promise.resolve(
-      createFetchResponse({
-        message: 'Hello, world!',
-        modified: true,
-      })
-    );
-  }
-}
-
-class TestBothPlugins extends BasePlugin {
-  async beforeRequest(url: string, options: RequestInit) {
-    expect(url).toBe('https://example.com/data');
-    expect(options).toStrictEqual({});
-    return { headers: { Authorization: 'Bearer token' } };
-  }
-
-  async afterResponse(response: Response) {
-    return Promise.resolve(
-      createFetchResponse({
-        message: 'Hello, world!',
-        modified: true,
-      })
-    );
-  }
-}
 
 describe('Fetcher', () => {
   describe('core', () => {
@@ -71,10 +31,11 @@ describe('Fetcher', () => {
       expect(await result.json()).toEqual(mockResponseData);
     });
 
-    test('fetch data with TestBeforePlugin', async () => {
+    test('fetch data with before plugin', async () => {
       const baseUrl = 'https://example.com';
       const fetcher = new Fetcher(baseUrl);
-      fetcher.use(new TestBeforePlugin());
+      const testPlugin = createTestBeforePlugin();
+      fetcher.use(testPlugin);
 
       mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
 
@@ -86,10 +47,15 @@ describe('Fetcher', () => {
       });
     });
 
-    test('fetch data with TestAfterPlugin', async () => {
+    test('fetch data with after plugin', async () => {
       const baseUrl = 'https://example.com';
       const fetcher = new Fetcher(baseUrl);
-      fetcher.use(new TestAfterPlugin());
+      const testPlugin = createTestAfterPlugin({
+        mergeOptions: {
+          response: false,
+        },
+      });
+      fetcher.use(testPlugin);
 
       mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
 
@@ -97,7 +63,6 @@ describe('Fetcher', () => {
 
       const modifiedResponseData = await result.json();
       expect(modifiedResponseData).toEqual({
-        message: 'Hello, world!',
         modified: true,
       });
     });
@@ -105,7 +70,9 @@ describe('Fetcher', () => {
     test('fetch data with multiple plugins', async () => {
       const baseUrl = 'https://example.com';
       const fetcher = new Fetcher(baseUrl);
-      fetcher.use([new TestBeforePlugin(), new TestAfterPlugin()]);
+      const beforePlugin = createTestBeforePlugin();
+      const afterPlugin = createTestAfterPlugin();
+      fetcher.use([beforePlugin, afterPlugin]);
 
       mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
 
@@ -120,22 +87,135 @@ describe('Fetcher', () => {
       });
     });
 
-    test('fetch data with TestBothPlugins', async () => {
+    test('fetch data with multiple plugins and merge options', async () => {
       const baseUrl = 'https://example.com';
       const fetcher = new Fetcher(baseUrl);
-      fetcher.use(new TestBothPlugins());
+      const beforePlugin = createTestBeforePlugin();
+      const afterPlugin = createTestAfterPlugin();
+      fetcher.use([beforePlugin, afterPlugin]);
 
+      mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
+
+      const postData = {
+        test: 'test',
+        params: {
+          testOne: 'testOne',
+        },
+      };
+      const result = await fetcher.fetch('/data', {
+        headers: {
+          'X-test': 'test',
+        },
+        method: 'POST',
+        body: JSON.stringify(postData),
+      });
+
+      expect(mockFetch).toHaveBeenCalledWith('https://example.com/data', {
+        headers: { Authorization: 'Bearer token', 'X-test': 'test' },
+        method: 'POST',
+        body: JSON.stringify(postData),
+      });
+      expect(await result.json()).toEqual({
+        message: 'Hello, world!',
+        modified: true,
+      });
+    });
+
+    test('fetch with rejected promise', async () => {
+      const baseUrl = 'https://example.com';
+      const fetcher = new Fetcher(baseUrl);
+
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(fetcher.fetch('/data')).rejects.toThrow('Network error');
+    });
+
+    test('fetch with plugin that throws an error', async () => {
+      const baseUrl = 'https://example.com';
+      const fetcher = new Fetcher(baseUrl);
+      const errorPlugin = createTestBeforePlugin(
+        {
+          throwOnError: true,
+        },
+        () => {
+          throw new Error('Plugin error');
+        }
+      );
+      fetcher.use(errorPlugin);
+
+      mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
+
+      await expect(fetcher.fetch('/data')).rejects.toThrow('Plugin error');
+    });
+    test('fetch with plugin that throws an error but the fetcher handle is', async () => {
+      const baseUrl = 'https://example.com';
+      const fetcher = new Fetcher(baseUrl);
+      const errorPlugin = createTestBeforePlugin(
+        {
+          throwOnError: false,
+        },
+        () => {
+          throw new Error('Plugin error');
+        }
+      );
+      fetcher.use(errorPlugin);
+
+      mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
+
+      await expect(fetcher.fetch('/data')).resolves.toEqual(
+        createFetchResponse(mockResponseData)
+      );
+    });
+
+    test('fetch without options', async () => {
+      const baseUrl = 'https://example.com';
+      const fetcher = new Fetcher(baseUrl);
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
 
       const result = await fetcher.fetch('/data');
 
-      const modifiedResponseData = await result.json();
-      expect(modifiedResponseData).toEqual({
-        message: 'Hello, world!',
-        modified: true,
+      expect(await result.json()).toEqual(mockResponseData);
+      expect(mockFetch).toHaveBeenCalledWith('https://example.com/data', {});
+    });
+
+    test('fetch without plugins', async () => {
+      const baseUrl = 'https://example.com';
+      const fetcher = new Fetcher(baseUrl);
+
+      mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
+
+      const result = await fetcher.fetch('/data', {
+        headers: {
+          'X-test': 'test',
+        },
       });
+
+      expect(await result.json()).toEqual(mockResponseData);
       expect(mockFetch).toHaveBeenCalledWith('https://example.com/data', {
-        headers: { Authorization: 'Bearer token' },
+        headers: {
+          'X-test': 'test',
+        },
+      });
+    });
+
+    test('fetch with empty plugins array', async () => {
+      const baseUrl = 'https://example.com';
+      const fetcher = new Fetcher(baseUrl);
+
+      mockFetch.mockResolvedValueOnce(createFetchResponse(mockResponseData));
+
+      const result = await fetcher.fetch('/data', {
+        headers: {
+          'X-test': 'test',
+        },
+      });
+
+      expect(await result.json()).toEqual(mockResponseData);
+      expect(mockFetch).toHaveBeenCalledWith('https://example.com/data', {
+        headers: {
+          'X-test': 'test',
+        },
       });
     });
   });

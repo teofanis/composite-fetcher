@@ -9,4 +9,14 @@ export interface FetcherPlugin {
     options?: RequestInit
   ): Promise<RequestInit> | RequestInit;
   _afterResponse?(response: Response): Promise<Response> | Response;
+  addOptions(options?: Partial<PluginOptions>): FetcherPlugin;
+  getOptions(): PluginOptions;
 }
+
+export type PluginOptions = {
+  mergeOptions: {
+    request: boolean;
+    response: boolean;
+  };
+  throwOnError: boolean;
+};

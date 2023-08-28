@@ -1,4 +1,4 @@
-import { FetcherPlugin } from '@/interfaces';
+import { FetcherPlugin, PluginOptions } from '@/interfaces';
 // import fetch from 'cross-fetch';
 
 export class Fetcher {
@@ -6,11 +6,14 @@ export class Fetcher {
 
   constructor(private baseUrl: string) {}
 
-  use(plugin: FetcherPlugin | FetcherPlugin[]): void {
+  use(
+    plugin: FetcherPlugin | FetcherPlugin[],
+    pluginOptions?: Partial<PluginOptions>
+  ): void {
     if (Array.isArray(plugin)) {
-      this.plugins.push(...plugin);
+      plugin.forEach((p) => this.use(p, pluginOptions));
     } else {
-      this.plugins.push(plugin);
+      this.plugins.push(plugin.addOptions(pluginOptions));
     }
   }
   async applyBeforeRequestPluginActions(
@@ -21,7 +24,11 @@ export class Fetcher {
 
     for (const plugin of this.plugins) {
       if (typeof plugin._beforeRequest === 'function') {
-        requestOptions = await plugin._beforeRequest(url, requestOptions);
+        try {
+          requestOptions = await plugin._beforeRequest(url, requestOptions);
+        } catch (error) {
+          if (plugin.getOptions().throwOnError) throw error;
+        }
       }
     }
 
@@ -35,9 +42,13 @@ export class Fetcher {
 
     for (const plugin of this.plugins) {
       if (typeof plugin._afterResponse === 'function') {
-        const modifiedResponse = await plugin._afterResponse(response);
-        if (modifiedResponse) {
-          response = modifiedResponse;
+        try {
+          const modifiedResponse = await plugin._afterResponse(response);
+          if (modifiedResponse) {
+            response = modifiedResponse;
+          }
+        } catch (error) {
+          if (plugin.getOptions().throwOnError) throw error;
         }
       }
     }
@@ -47,17 +58,13 @@ export class Fetcher {
 
   async fetch(path: string, options?: RequestInit): Promise<Response> {
     const url = new URL(path, this.baseUrl).toString();
-
-    // Apply beforeRequest plugin actions
     const requestOptions = await this.applyBeforeRequestPluginActions(
       url,
       options
     );
-
     // Fetch the response
     const response = await fetch(url, requestOptions);
 
-    // Apply afterResponse plugin actions
     const finalResponse = await this.applyAfterRequestPluginActions(response);
 
     return finalResponse;
