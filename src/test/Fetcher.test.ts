@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import fetch, { Request } from 'cross-fetch';
-import sinon, { spy } from 'sinon';
 
 import { BasePlugin } from '@/lib/plugins';
 import { Fetcher } from '@/lib/Fetcher';
+import { Request } from 'cross-fetch';
 import fetchMock from 'fetch-mock';
 
 class TestPlugin extends BasePlugin {}

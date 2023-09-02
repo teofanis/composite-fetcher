@@ -25,12 +25,7 @@ export class PluginManager {
 
   timeoutPlugin(plugin: Plugin, onTimeout: () => void): NodeJS.Timeout {
     const timeout = plugin.pluginTimeout || 3000;
-    return setTimeout(() => {
-      console.error(
-        `Plugin ${plugin} timed out after ${timeout}ms - continuing...`
-      );
-      onTimeout();
-    }, timeout);
+    return setTimeout(onTimeout, timeout);
   }
 
   runPreRequestHooks(request: Request): Promise<Request> {
