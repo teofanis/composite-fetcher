@@ -1,22 +1,20 @@
-export interface FetcherPlugin {
-  beforeRequest?(
-    url: string,
-    options?: RequestInit
-  ): Promise<RequestInit> | RequestInit;
-  afterResponse?(response: Response): Promise<Response> | Response;
-  _beforeRequest?(
-    url: string,
-    options?: RequestInit
-  ): Promise<RequestInit> | RequestInit;
-  _afterResponse?(response: Response): Promise<Response> | Response;
-  addOptions(options?: Partial<PluginOptions>): FetcherPlugin;
-  getOptions(): PluginOptions;
+import { PluginManager } from '@/lib/PluginManager';
+export interface Plugin {
+  pluginTimeout?: number;
+  onPreRequest?: (
+    request: Request,
+    originalRequest: Request,
+    next: () => void
+  ) => Promise<void>;
+  onPostRequest?: (
+    response: Response,
+    originalRequest: Request,
+    pluginManager: PluginManager,
+    next: () => void
+  ) => Promise<void>;
 }
 
-export type PluginOptions = {
-  mergeOptions: {
-    request: boolean;
-    response: boolean;
-  };
-  throwOnError: boolean;
-};
+export enum PluginLifecycleHook {
+  PRE_REQUEST = 'preRequest',
+  POST_REQUEST = 'postRequest',
+}
