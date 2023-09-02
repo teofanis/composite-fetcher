@@ -97,19 +97,16 @@ describe('Fetcher', () => {
     const plugin3 = new TestPlugin();
     plugin1.onPreRequest = async (request, originalRequest, next) => {
       request.headers.set('Order', '1');
-      console.log('plugin1');
       next();
     };
 
     plugin2.onPreRequest = async (request, originalRequest, next) => {
       request.headers.set('Order', request.headers.get('Order') + '2');
-      console.log('plugin2');
       next();
     };
 
     plugin3.onPreRequest = async (request, originalRequest, next) => {
       request.headers.set('Order', request.headers.get('Order') + '3');
-      console.log('plugin3');
       next();
     };
     plugin3.onPostRequest = async (
@@ -121,7 +118,6 @@ describe('Fetcher', () => {
       expect(pluginManager.getModifiedRequest().headers.get('Order')).toEqual(
         '123'
       );
-      console.log('plugin3 post');
       response.headers.set('Order', '123');
       next();
     };
