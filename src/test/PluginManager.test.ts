@@ -1,3 +1,4 @@
+import { PluginHandlerContext, PluginLifecycleHook } from '@/interfaces';
 import { Request, Response } from 'cross-fetch';
 import { describe, expect, test } from 'vitest';
 
@@ -5,6 +6,26 @@ import { BasePlugin } from '@/lib/plugins';
 import { PluginManager } from '@/lib/PluginManager';
 
 class TestPlugin extends BasePlugin {}
+class SlowPLugin extends BasePlugin {
+  pluginTimeout = 1000;
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
+  ): Promise<void> {
+    const { request, next } = context;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    request.headers.set('SlowPlugin', 'test');
+    next();
+  }
+}
+class FastPlugin extends BasePlugin {
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
+  ): Promise<void> {
+    const { request, next } = context;
+    request.headers.set('FastPlugin', 'test');
+    next();
+  }
+}
 
 describe('PluginManager', () => {
   test('should add a plugin', () => {
@@ -28,7 +49,7 @@ describe('PluginManager', () => {
   test('should run pre-request hooks', async () => {
     const pluginManager = new PluginManager();
     const plugin = new TestPlugin();
-    plugin.onPreRequest = async (request, originalRequest, next) => {
+    plugin.onPreRequest = async ({ request, next }) => {
       request.headers.set('Test', 'test');
       next();
     };
@@ -44,12 +65,7 @@ describe('PluginManager', () => {
   test('should run post-request hooks', async () => {
     const pluginManager = new PluginManager();
     const plugin = new TestPlugin();
-    plugin.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin.onPostRequest = async ({ response, next }) => {
       response.headers.set('Test', 'test');
       next();
     };
@@ -68,12 +84,12 @@ describe('PluginManager', () => {
   test('should skip a pre-request hook that throws an error and continue', async () => {
     const pluginManager = new PluginManager();
     const plugin1 = new TestPlugin();
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async () => {
       throw new Error('Test error');
     };
 
     const plugin2 = new TestPlugin();
-    plugin2.onPreRequest = async (request, originalRequest, next) => {
+    plugin2.onPreRequest = async ({ request, next }) => {
       request.headers.set('Test', 'test');
       next();
     };
@@ -89,22 +105,12 @@ describe('PluginManager', () => {
   test('should skip a post-request hook that throws an error and continue', async () => {
     const pluginManager = new PluginManager();
     const plugin1 = new TestPlugin();
-    plugin1.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin1.onPostRequest = async () => {
       throw new Error('Test error');
     };
 
     const plugin2 = new TestPlugin();
-    plugin2.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin2.onPostRequest = async ({ response, next }) => {
       response.headers.set('Test', 'test');
       next();
     };
@@ -141,14 +147,14 @@ describe('PluginManager', () => {
     const pluginManager = new PluginManager();
 
     const plugin1 = new TestPlugin();
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async ({ request, next }) => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       request.headers.set('Order', '1');
       next();
     };
 
     const plugin2 = new TestPlugin();
-    plugin2.onPreRequest = async (request, originalRequest, next) => {
+    plugin2.onPreRequest = async ({ request, next }) => {
       await new Promise((resolve) => setTimeout(resolve, 50));
       request.headers.set('Order', request.headers.get('Order') + '2');
       next();
@@ -165,24 +171,14 @@ describe('PluginManager', () => {
     const pluginManager = new PluginManager();
 
     const plugin1 = new TestPlugin();
-    plugin1.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin1.onPostRequest = async ({ response, next }) => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       response.headers.set('Order', '1');
       next();
     };
 
     const plugin2 = new TestPlugin();
-    plugin2.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin2.onPostRequest = async ({ response, next }) => {
       await new Promise((resolve) => setTimeout(resolve, 50));
       response.headers.set('Order', response.headers.get('Order') + '2');
       next();
@@ -202,23 +198,8 @@ describe('PluginManager', () => {
 
   test('should timeout a plugin that takes too long', async () => {
     const pluginManager = new PluginManager();
-
-    const slowPlugin = {
-      pluginTimeout: 1000,
-      onPreRequest: async (request, originalRequest, next) => {
-        // Deliberately take too long
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        request.headers.set('SlowPlugin', 'test');
-        next();
-      },
-    };
-
-    const fastPlugin = {
-      onPreRequest: (request, originalRequest, next) => {
-        request.headers.set('FastPlugin', 'test');
-        next();
-      },
-    };
+    const slowPlugin = new SlowPLugin();
+    const fastPlugin = new FastPlugin();
 
     pluginManager.addPlugins([slowPlugin, fastPlugin]);
 
@@ -233,13 +214,13 @@ describe('PluginManager', () => {
   test('should not process a plugin multiple times if next is called multiple times', async () => {
     const pluginManager = new PluginManager();
     const plugin1 = new TestPlugin();
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async ({ request, next }) => {
       request.headers.set('Test', 'test1');
       next();
       next();
     };
     const plugin2 = new TestPlugin();
-    plugin2.onPreRequest = async (request, originalRequest, next) => {
+    plugin2.onPreRequest = async ({ request, next }) => {
       request.headers.set('Test', 'test2');
       next();
     };
@@ -254,31 +235,21 @@ describe('PluginManager', () => {
   test('should process all pre-request and post-request hooks', async () => {
     const pluginManager = new PluginManager();
     const plugin1 = new TestPlugin();
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async ({ request, next }) => {
       request.headers.set('PreRequest1', 'test');
       next();
     };
-    plugin1.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin1.onPostRequest = async ({ response, next }) => {
       response.headers.set('PostRequest1', 'test');
       next();
     };
 
     const plugin2 = new TestPlugin();
-    plugin2.onPreRequest = async (request, originalRequest, next) => {
+    plugin2.onPreRequest = async ({ request, next }) => {
       request.headers.set('PreRequest2', 'test');
       next();
     };
-    plugin2.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin2.onPostRequest = async ({ response, next }) => {
       response.headers.set('PostRequest2', 'test');
       next();
     };

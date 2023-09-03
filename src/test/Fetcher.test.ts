@@ -28,16 +28,11 @@ describe('Fetcher', () => {
   test('should modify the request and response using the plugins', async () => {
     const fetcher = new Fetcher();
     const plugin = new TestPlugin();
-    plugin.onPreRequest = async (request, originalRequest, next) => {
+    plugin.onPreRequest = async ({ request, next }) => {
       request.headers.set('Test', 'test');
       next();
     };
-    plugin.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin.onPostRequest = async ({ response, next }) => {
       response.headers.set('Test', 'test');
       next();
     };
@@ -62,20 +57,15 @@ describe('Fetcher', () => {
     const fetcher = new Fetcher();
     const plugin1 = new TestPlugin();
     const plugin2 = new TestPlugin();
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async ({ request, next }) => {
       request.headers.set('Plugin1', 'test1');
       next();
     };
-    plugin2.onPostRequest = async (
-      request,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin2.onPostRequest = async ({ response, pluginManager, next }) => {
       expect(pluginManager.getModifiedRequest().headers.get('Plugin1')).toEqual(
         'test1'
       );
-      request.headers.set('Plugin2', 'test2');
+      response.headers.set('Plugin2', 'test2');
       next();
     };
 
@@ -94,26 +84,21 @@ describe('Fetcher', () => {
     const plugin1 = new TestPlugin();
     const plugin2 = new TestPlugin();
     const plugin3 = new TestPlugin();
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async ({ request, next }) => {
       request.headers.set('Order', '1');
       next();
     };
 
-    plugin2.onPreRequest = async (request, originalRequest, next) => {
+    plugin2.onPreRequest = async ({ request, next }) => {
       request.headers.set('Order', request.headers.get('Order') + '2');
       next();
     };
 
-    plugin3.onPreRequest = async (request, originalRequest, next) => {
+    plugin3.onPreRequest = async ({ request, next }) => {
       request.headers.set('Order', request.headers.get('Order') + '3');
       next();
     };
-    plugin3.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin3.onPostRequest = async ({ response, pluginManager, next }) => {
       expect(pluginManager.getModifiedRequest().headers.get('Order')).toEqual(
         '123'
       );
@@ -135,7 +120,7 @@ describe('Fetcher', () => {
     const fetcher = new Fetcher();
     const plugin = new TestPlugin();
 
-    plugin.onPreRequest = async (request, originalRequest, next) => {
+    plugin.onPreRequest = async () => {
       throw new Error('Test Error');
     };
 
@@ -154,7 +139,7 @@ describe('Fetcher', () => {
     const fetcher = new Fetcher();
     const plugin = new TestPlugin();
 
-    plugin.onPreRequest = async (request, originalRequest, next) => {
+    plugin.onPreRequest = async () => {
       // do not call next
     };
 
@@ -178,26 +163,21 @@ describe('Fetcher', () => {
       plugin3: 0,
     };
 
-    plugin1.onPreRequest = async (request, originalRequest, next) => {
+    plugin1.onPreRequest = async ({ next }) => {
       counters.plugin1++;
       next();
     };
 
-    plugin2.onPreRequest = async (request, originalRequest, next) => {
+    plugin2.onPreRequest = async ({ next }) => {
       counters.plugin2++;
       next();
     };
 
-    plugin3.onPreRequest = async (request, originalRequest, next) => {
+    plugin3.onPreRequest = async ({ next }) => {
       counters.plugin3++;
       next();
     };
-    plugin3.onPostRequest = async (
-      response,
-      originalRequest,
-      pluginManager,
-      next
-    ) => {
+    plugin3.onPostRequest = async ({ next }) => {
       counters.plugin3++;
       next();
     };

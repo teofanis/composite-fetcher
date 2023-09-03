@@ -1,7 +1,10 @@
-import { Plugin, PluginLifecycleHook } from '@/interfaces';
-
-import { clearTimeout } from 'timers';
-
+/* eslint-disable @typescript-eslint/no-empty-function */
+import {
+  Plugin,
+  PluginHandlerContext,
+  PluginLifecycleHook,
+} from '@/interfaces';
+import { Request, Response } from 'cross-fetch';
 export class PluginManager {
   private plugins: Plugin[] = [];
   private modifiedRequest!: Request;
@@ -19,48 +22,98 @@ export class PluginManager {
     }
   }
 
-  hasBeenProcessed(plugin: Plugin, hook: PluginLifecycleHook): boolean {
+  private hasBeenProcessed(plugin: Plugin, hook: PluginLifecycleHook): boolean {
     return this.processedHooks[hook].has(plugin);
   }
 
-  timeoutPlugin(plugin: Plugin, onTimeout: () => void): NodeJS.Timeout {
-    const timeout = plugin.pluginTimeout || 3000;
-    return setTimeout(onTimeout, timeout);
+  private isPreRequestContext(
+    context: PluginHandlerContext<PluginLifecycleHook>
+  ): context is PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST> {
+    return (
+      'request' in context &&
+      context.request instanceof Request &&
+      context.originalRequest instanceof Request
+    );
+  }
+
+  private isPostRequestContext(
+    context: PluginHandlerContext<PluginLifecycleHook>
+  ): context is PluginHandlerContext<PluginLifecycleHook.POST_REQUEST> {
+    return (
+      'response' in context &&
+      context.response instanceof Response &&
+      context.originalRequest instanceof Request
+    );
+  }
+
+  private processPlugins<T>(
+    hook: PluginLifecycleHook,
+    context: T extends PluginLifecycleHook.PRE_REQUEST
+      ? PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
+      : PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
+    resolve: (value: Request | Response) => void
+  ) {
+    let index = 0;
+    const isPreRequestContext = this.isPreRequestContext(context);
+    const isPostRequestContext = this.isPostRequestContext(context);
+
+    const next = () => {
+      if (index >= this.plugins.length) {
+        if (isPreRequestContext) {
+          resolve(context.request);
+        } else if (isPostRequestContext) {
+          resolve(context.response);
+        }
+        return;
+      }
+
+      const plugin = this.plugins[index];
+
+      if (this.hasBeenProcessed(plugin, hook)) {
+        index++;
+        next();
+        return;
+      }
+
+      index++;
+      this.processedHooks[hook].add(plugin);
+
+      const timeout = setTimeout(() => {
+        console.error(`Plugin timed out: ${plugin.constructor.name}`);
+        context.next();
+      }, plugin.pluginTimeout || 3000);
+
+      const method = isPreRequestContext ? 'onPreRequest' : 'onPostRequest';
+
+      context.next = () => {
+        clearTimeout(timeout);
+        next();
+      };
+
+      Promise.resolve(plugin[method]?.(context as any)).catch((error) => {
+        console.error(`Error in plugin: ${error}`);
+        context.next();
+      });
+    };
+
+    next();
   }
 
   runPreRequestHooks(request: Request): Promise<Request> {
     return new Promise((resolve) => {
       this.modifiedRequest = request.clone();
-      let index = 0;
+      const context = {
+        request: this.modifiedRequest,
+        originalRequest: request,
+        next: () => {},
+        pluginManager: this,
+      } as PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>;
 
-      const next = () => {
-        if (index >= this.plugins.length) {
-          resolve(this.modifiedRequest);
-          return;
-        }
-
-        const plugin = this.plugins[index];
-        if (this.hasBeenProcessed(plugin, PluginLifecycleHook.PRE_REQUEST)) {
-          index++;
-          next();
-          return;
-        }
-
-        index++;
-        this.processedHooks.preRequest.add(plugin);
-
-        const timeOut = this.timeoutPlugin(plugin, next);
-
-        Promise.resolve(
-          plugin.onPreRequest?.(this.modifiedRequest, request.clone(), next)
-        ).catch((error) => {
-          console.error(`Error in plugin: ${error}`);
-          clearTimeout(timeOut);
-          next();
-        });
-      };
-
-      next();
+      this.processPlugins<PluginLifecycleHook.PRE_REQUEST>(
+        PluginLifecycleHook.PRE_REQUEST,
+        context,
+        resolve as any
+      );
     });
   }
 
@@ -70,40 +123,18 @@ export class PluginManager {
   ): Promise<Response> {
     return new Promise((resolve) => {
       this.modifiedResponse = response.clone();
-      let index = 0;
-      const next = () => {
-        if (index >= this.plugins.length) {
-          resolve(this.modifiedResponse);
-          return;
-        }
+      const context = {
+        response: this.modifiedResponse,
+        originalRequest,
+        next: () => {},
+        pluginManager: this,
+      } as PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>;
 
-        const plugin = this.plugins[index];
-
-        if (this.hasBeenProcessed(plugin, PluginLifecycleHook.POST_REQUEST)) {
-          index++;
-          next();
-          return;
-        }
-
-        index++;
-        this.processedHooks.postRequest.add(plugin);
-        const timeOut = this.timeoutPlugin(plugin, next);
-
-        Promise.resolve(
-          plugin.onPostRequest?.(
-            this.modifiedResponse,
-            originalRequest,
-            this,
-            next
-          )
-        ).catch((error) => {
-          console.error(`Error in plugin: ${error}`);
-          clearTimeout(timeOut);
-          next();
-        });
-      };
-
-      next();
+      this.processPlugins<PluginLifecycleHook.POST_REQUEST>(
+        PluginLifecycleHook.POST_REQUEST,
+        context,
+        resolve as any
+      );
     });
   }
 

@@ -1,22 +1,21 @@
-import { Plugin } from '@/interfaces';
-import { PluginManager } from '@/lib/PluginManager';
+import {
+  Plugin,
+  PluginHandlerContext,
+  PluginLifecycleHook,
+} from '@/interfaces';
 
 export default abstract class BasePlugin implements Plugin {
   pluginTimeout?: number = 3000;
-  async onPreRequest?(
-    request: Request,
-    originalRequest: Request,
-    next: () => void
+
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
   ): Promise<void> {
-    next();
+    context.next();
   }
 
-  async onPostRequest?(
-    response: Response,
-    originalRequest: Request,
-    pluginManager: PluginManager,
-    next: () => void
+  async onPostRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>
   ): Promise<void> {
-    next();
+    context.next();
   }
 }
