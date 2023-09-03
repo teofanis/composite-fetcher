@@ -1,5 +1,5 @@
 {
-  "name": "simple-fetcher",
+  "name": "composite-fetcher",
   "version": "0.0.1",
   "description": "vite,",
   "main": "index.js",
