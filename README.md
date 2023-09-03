@@ -1,12 +1,2 @@
-# vite starter
-Personal starter template for typescript with `Vite` + `Vitest`.
-
-# Integrated Plugins
-- [vite](https://github.com/vitejs/vite) 
-- [vitest](https://github.com/vitest-dev/vitest) 
-- [editorconfig](https://github.com/editorconfig/editorconfig) 
-- [prettier](https://github.com/prettier/prettier) 
-- [eslint](https://github.com/eslint/eslint) 
-- [husky](https://github.com/typicode/husky) 
-- [commitlint](https://github.com/conventional-changelog/commitlint)
-- [standard-version](https://github.com/conventional-changelog/standard-version) 
+# Composite Fetcher
+Composite Fetcher is a robust fetch wrapper designed to supercharge your fetch API requests by providing a highly customizable and extensible interface. With its powerful plugin system, you can easily modify requests and responses, implement caching, handle errors globally, and much more, all with minimal code. Whether you're building a front-end or back-end application, Composite Fetcher empowers you to create, configure, and manage your HTTP requests with unparalleled flexibility and control.
