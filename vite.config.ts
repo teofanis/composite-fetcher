@@ -11,6 +11,7 @@ const config = defineConfig({
   test: {
     ...configDefaults,
     environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
     alias: {
       '@/': '/src/',
     },

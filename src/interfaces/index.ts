@@ -1,22 +1,35 @@
-export interface FetcherPlugin {
-  beforeRequest?(
-    url: string,
-    options?: RequestInit
-  ): Promise<RequestInit> | RequestInit;
-  afterResponse?(response: Response): Promise<Response> | Response;
-  _beforeRequest?(
-    url: string,
-    options?: RequestInit
-  ): Promise<RequestInit> | RequestInit;
-  _afterResponse?(response: Response): Promise<Response> | Response;
-  addOptions(options?: Partial<PluginOptions>): FetcherPlugin;
-  getOptions(): PluginOptions;
+import { PluginManager } from '@/lib/PluginManager';
+
+type PreRequestPluginHandlerContext = {
+  request: Request;
+  originalRequest: Request;
+  next: () => void;
+  pluginManager: PluginManager;
+};
+
+type PostRequestPluginHandlerContext = {
+  response: Response;
+  originalRequest: Request;
+  next: () => void;
+  pluginManager: PluginManager;
+};
+
+export type PluginHandlerContext<T> = T extends PluginLifecycleHook.PRE_REQUEST
+  ? PreRequestPluginHandlerContext
+  : T extends PluginLifecycleHook.POST_REQUEST
+  ? PostRequestPluginHandlerContext
+  : never;
+export interface Plugin {
+  pluginTimeout?: number;
+  onPreRequest?: (
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
+  ) => Promise<void>;
+  onPostRequest?: (
+    context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>
+  ) => Promise<void>;
 }
 
-export type PluginOptions = {
-  mergeOptions: {
-    request: boolean;
-    response: boolean;
-  };
-  throwOnError: boolean;
-};
+export enum PluginLifecycleHook {
+  PRE_REQUEST = 'preRequest',
+  POST_REQUEST = 'postRequest',
+}

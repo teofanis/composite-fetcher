@@ -26,6 +26,7 @@
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "fetch-mock": "^9.11.0",
     "husky": "^7.0.4",
     "jsdom": "^22.1.0",
     "prettier": "^2.5.1",
@@ -36,7 +37,6 @@
     "vitest": "^0.34.3"
   },
   "dependencies": {
-    "cross-fetch": "^4.0.0",
-    "lodash.merge": "^4.6.2"
+    "cross-fetch": "^4.0.0"
   }
 }
