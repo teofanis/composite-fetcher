@@ -1,0 +1,14 @@
+{
+  "exclude": ["node_modules"],
+  "extends": "@composite-fetcher/tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES2016",
+    "lib": ["ESNext", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src"]
+}

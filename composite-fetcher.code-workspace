@@ -1,0 +1,65 @@
+{
+  "folders": [
+    {
+      "name": "Fetcher Core",
+      "path": "packages/core"
+    },
+    {
+      "name": "Docs",
+      "path": "apps/docs"
+    },
+    {
+      "name": "Utils",
+      "path": "packages/utils"
+    },
+    {
+      "name": "Examples",
+      "path": "apps/examples"
+    },
+    {
+      "name": "Root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+      "source.fixAll.format": true
+    },
+    "jest.autoRun" :{
+      "watch":false,
+    },
+    "jest.autoRevealOutput": "on-exec-error",
+    "[json][jsonc][yaml]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[handlebars]": {
+      "editor.formatOnSave": false
+    },
+    "prettier.ignorePath": ".gitignore",
+    "prettier.singleQuote": true,
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "cSpell.words": [
+      "dbaeumer",
+      "esbenp",
+      "Gruntfuggly",
+      "Orta"
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "Orta.vscode-jest",
+      "wix.vscode-import-cost",
+      "Gruntfuggly.todo-tree",
+      "streetsidesoftware.code-spell-checker"
+    ]
+  }
+}
