@@ -31,7 +31,7 @@ jobs:
       - name: Create .npmrc and display its contents
         run: |
           cat << EOF > "$GITHUB_WORKSPACE/.npmrc"
-          //registry.npmjs.org/:_authToken=$NPM_TOKEN
+          //registry.npmjs.org/:_auth=$NPM_TOKEN
           EOF
           echo "Contents of .npmrc:"
           cat "$GITHUB_WORKSPACE/.npmrc"
