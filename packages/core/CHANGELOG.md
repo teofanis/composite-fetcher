@@ -1,5 +1,11 @@
 # @composite-fetcher/core
 
+## 0.0.2
+
+### Patch Changes
+
+- [#12](https://github.com/teofanis/composite-fetcher/pull/12) [`94f4f86`](https://github.com/teofanis/composite-fetcher/commit/94f4f86ad6602a3ddd9b00f4f113dea0b835a367) Thanks [@teofanis](https://github.com/teofanis)! - chore: comment to test
+
 ## 0.0.1
 
 ### Patch Changes
