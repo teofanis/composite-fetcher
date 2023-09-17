@@ -30,7 +30,7 @@ jobs:
 
       - name: Create .nprmc
         run: |
-          cat << EOF > "$HOME/.npmrc"
+          cat << EOF > "$GITHUB_WORKSPACE/.npmrc"
             //registry.npmjs.org/:_authToken=$NPM_TOKEN
           EOF
         env:
