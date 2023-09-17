@@ -27,14 +27,11 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm i
-        
-      - name: Debug
-        run: echo ${{secrets.NPM_TOKEN }} | sed 's/./& /g'
 
       - name: Create .nprmc
         run: |
           cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_auth=$NPM_TOKEN
+            //registry.npmjs.org/:_authToken=$NPM_TOKEN
           EOF
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
