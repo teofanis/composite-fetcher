@@ -1,0 +1,36 @@
+{
+  "name": "@composite-fetcher/{{name}}",
+  "description": "{{description}}",
+  "version": "0.0.0",
+  "author": "{{maintainer}}",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "pnpm run build -- --watch",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "test": "jest",
+    "format": "pnpm run lint -- --fix && prettier --write \"src/**/*.ts*\" --ignore-path .gitignore",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "ts-jest": "^29.1.1",
+    "jest": "^29.7.0",
+    "@composite-fetcher/eslint-config": "workspace:*",
+    "@composite-fetcher/tsconfig": "workspace:*"
+  }
+}

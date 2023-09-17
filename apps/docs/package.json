@@ -1,0 +1,27 @@
+{
+  "name": "@composite-fetcher/docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "start": "next start ",
+    "dev": "next dev -p 3002",
+    "lint": "next lint",
+    "format": "pnpm run lint -- --fix && prettier --write \"src/**/*.ts*\" --ignore-path .gitignore",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
+  },
+  "dependencies": {
+    "@composite-fetcher/utils": "workspace:*",
+    "next": "^13.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@composite-fetcher/tsconfig": "workspace:*",
+    "@types/node": "^17.0.12",
+    "@types/react": "^18.0.22",
+    "@types/react-dom": "^18.0.7",
+    "@composite-fetcher/eslint-config": "workspace:*",
+    "typescript": "^4.5.4"
+  }
+}
