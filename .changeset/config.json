@@ -1,11 +1,17 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.0.0/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "teofanis/composite-fetcher"
+    }
+  ],
   "commit": false,
   "fixed": [],
   "linked": [],
   "access": "public",
   "updateInternalDependencies": "patch",
+  "baseBranch": "main",
   "ignore": [
     "@composite-fetcher/docs"
   ]
