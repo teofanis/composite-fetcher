@@ -16,7 +16,7 @@
     "prepare": "husky install",
     "version-packages": "changeset version",
     "create:package": "plop package",
-    "pre-release": "turbo build --filter=docs^... && changeset version",
+    "pre-release": "turbo build  && changeset version",
     "release": "pnpm run pre-release && changeset publish",
     "commit": "cz",
     "commit:retry": "cz --retry"
