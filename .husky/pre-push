@@ -1,6 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-npx changeset-conventional-commits
-git add .changeset/
-git commit --amend --no-edit

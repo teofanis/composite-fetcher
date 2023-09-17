@@ -2,3 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # npx lint-staged --concurrent false
+echo "Generating changeset based on commit message."
+npx changeset-conventional-commits
+git add .changeset/
