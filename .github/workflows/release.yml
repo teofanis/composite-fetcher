@@ -33,6 +33,8 @@ jobs:
           cat << EOF > "$GITHUB_WORKSPACE/.npmrc"
             //registry.npmjs.org/:_authToken=$NPM_TOKEN
           EOF
+          echo "Contents of .npmrc:"
+          cat "$GITHUB_WORKSPACE/.npmrc"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           
