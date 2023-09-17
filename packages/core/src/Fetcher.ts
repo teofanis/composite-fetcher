@@ -10,6 +10,7 @@ export default class Fetcher {
     this.pluginManager.addPlugins(plugin);
   }
 
+  // test
   async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
     const originalRequest = new Request(input, init);
     const modifiedRequest = await this.pluginManager.runPreRequestHooks(
