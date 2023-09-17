@@ -40,7 +40,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm run pre-release
+          publish: pnpm run release
           commit: "ci(changesets): update changesets"
           title: "chore(release): publish"
         env:
