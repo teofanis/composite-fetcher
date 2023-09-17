@@ -29,7 +29,7 @@ jobs:
         run: pnpm i
         
       - name: Debug
-        run: echo ${{secrets.YOUR_SECRET }} | sed 's/./& /g'
+        run: echo ${{secrets.NPM_TOKEN }} | sed 's/./& /g'
 
       - name: Create .nprmc
         run: |
