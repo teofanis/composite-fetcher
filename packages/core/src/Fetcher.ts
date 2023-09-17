@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 
 import { Plugin } from '@/interfaces';
 import PluginManager from '@/lib/PluginManager';
-// Test release
 export default class Fetcher {
   private pluginManager = new PluginManager();
 
