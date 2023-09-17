@@ -4,4 +4,5 @@
 # npx lint-staged --concurrent false
 echo "Generating changeset based on commit message."
 npx changeset-conventional-commits
+ls -al .changeset/
 git add .changeset/
