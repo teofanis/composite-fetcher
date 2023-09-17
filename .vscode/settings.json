@@ -18,8 +18,21 @@
   "prettier.ignorePath": ".gitignore",
   "prettier.singleQuote": true,
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "cSpell.words": ["commitlint", "esbuild", "Lich", "Parens", "vite", "vitest"],
+  "cSpell.words": [
+    "commitlint",
+    "esbuild",
+    "Lich",
+    "Parens",
+    "vite",
+    "vitest"
+  ],
   "[postcss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   }
 }

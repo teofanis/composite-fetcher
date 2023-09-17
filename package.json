@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "pnpm run prepare",
     "build": "turbo build",
     "dev": "turbo dev --no-cache --continue",
     "lint": "turbo lint",
@@ -15,19 +16,28 @@
     "prepare": "husky install",
     "version-packages": "changeset version",
     "create:package": "plop package",
-    "release": "turbo build --filter=docs^... && changeset publish"
+    "commit": "cz",
+    "commit:retry": "cz --retry"
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/cz-commitlint": "^17.7.1",
     "@composite-fetcher/eslint-config": "workspace:*",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "plop": "^4.0.0",
     "prettier": "^2.5.1",
     "turbo": "latest"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
   },
   "packageManager": "pnpm@8.6.10",
   "dependencies": {

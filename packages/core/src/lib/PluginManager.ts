@@ -1,13 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-console */
+/* eslint-disable no-plusplus */
+/* eslint-disable import/no-cycle */
 import {
   Plugin,
   PluginHandlerContext,
   PluginLifecycleHook,
 } from '@/interfaces';
-import { Request, Response } from 'cross-fetch';
-export class PluginManager {
+
+export default class PluginManager {
   private plugins: Plugin[] = [];
+
   private modifiedRequest!: Request;
+
   private modifiedResponse!: Response;
+
   private processedHooks: Record<PluginLifecycleHook, Set<Plugin>> = {
     preRequest: new Set<Plugin>(),
     postRequest: new Set<Plugin>(),
@@ -26,7 +33,7 @@ export class PluginManager {
   }
 
   private isPreRequestContext(
-    context: PluginHandlerContext<PluginLifecycleHook>
+    context: PluginHandlerContext<PluginLifecycleHook>,
   ): context is PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST> {
     return (
       'request' in context &&
@@ -36,7 +43,7 @@ export class PluginManager {
   }
 
   private isPostRequestContext(
-    context: PluginHandlerContext<PluginLifecycleHook>
+    context: PluginHandlerContext<PluginLifecycleHook>,
   ): context is PluginHandlerContext<PluginLifecycleHook.POST_REQUEST> {
     return (
       'response' in context &&
@@ -50,7 +57,7 @@ export class PluginManager {
     context: T extends PluginLifecycleHook.PRE_REQUEST
       ? PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
       : PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
-    resolve: (value: Request | Response) => void
+    resolve: (value: Request | Response) => void,
   ) {
     let index = 0;
     const isPreRequestContext = this.isPreRequestContext(context);
@@ -111,14 +118,14 @@ export class PluginManager {
       this.processPlugins<PluginLifecycleHook.PRE_REQUEST>(
         PluginLifecycleHook.PRE_REQUEST,
         context,
-        resolve as any
+        resolve as any,
       );
     });
   }
 
   runPostRequestHooks(
     response: Response,
-    originalRequest: Request
+    originalRequest: Request,
   ): Promise<Response> {
     return new Promise((resolve) => {
       this.modifiedResponse = response.clone();
@@ -132,7 +139,7 @@ export class PluginManager {
       this.processPlugins<PluginLifecycleHook.POST_REQUEST>(
         PluginLifecycleHook.POST_REQUEST,
         context,
-        resolve as any
+        resolve as any,
       );
     });
   }

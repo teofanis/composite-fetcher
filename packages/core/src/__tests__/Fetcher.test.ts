@@ -1,190 +1,150 @@
-import BasePlugin from '@/lib/BasePlugin';
-import { Fetcher } from '@/Fetcher';
-import fetch from 'cross-fetch';
+import Fetcher from '@/Fetcher';
+import _fetchMock from 'isomorphic-fetch';
+import {
+  DummyPlugin,
+  ResponseModifierPlugin,
+  RequestModifierPlugin,
+  ErrorPlugin,
+  TimeoutPlugin,
+  CountingPlugin,
+  RequestHeaderPluginTwo,
+  ResponseHeaderPluginTwo,
+} from './testUtils';
 
-jest.mock('cross-fetch');
-
-const { Response, Request } = jest.requireActual('cross-fetch');
-
-class TestPlugin extends BasePlugin {}
+type FetchMock = typeof import('fetch-mock');
+const fetchMock = _fetchMock as unknown as FetchMock;
 
 describe('Fetcher', () => {
   beforeEach(() => {
-    (fetch as jest.Mock).mockResolvedValue(new Response(null, { status: 200 }));
+    fetchMock.restore();
+    fetchMock.reset();
+    global.Request = fetchMock.config.Request as unknown as typeof Request;
+    global.Response = fetchMock.config.Response as unknown as typeof Response;
+    fetchMock.get('https://example.com/', {
+      status: 200,
+      body: {},
+      headers: {},
+    });
   });
 
-  afterEach(() => {
-    (fetch as jest.Mock).mockReset();
-  });
+  describe('Plugin management', () => {
+    test('should add plugins to the plugin manager', () => {
+      const fetcher = new Fetcher();
+      const plugin = new DummyPlugin();
+      fetcher.use(plugin);
+      // @ts-expect-error - private property
+      expect(fetcher.pluginManager.getPlugins()).toEqual([plugin]);
+    });
 
-  test('should add plugins to the plugin manager', () => {
-    const fetcher = new Fetcher();
-    const plugin = new TestPlugin();
+    test('should handle request and response without any plugins', async () => {
+      const fetcher = new Fetcher();
+      const request = new Request('https://example.com/');
+      const response = await fetcher.fetch(request);
+      expect(response.status).toEqual(200);
+    });
 
-    fetcher.use(plugin);
-    // @ts-expect-error - private property
-    expect(fetcher.pluginManager.getPlugins()).toEqual([plugin]);
-  });
-
-  test('should modify the request and response using the plugins', async () => {
-    const fetcher = new Fetcher();
-    const plugin = new TestPlugin();
-    plugin.onPreRequest = async ({ request, next }) => {
-      request.headers.set('Test', 'test');
-      next();
-    };
-    plugin.onPostRequest = async ({ response, next }) => {
-      response.headers.set('Test', 'test');
-      next();
-    };
-
-    fetcher.use(plugin);
-
-    const request = new Request('https://google.com/');
-    const response = await fetcher.fetch(request);
-
-    expect(response.headers.get('Test')).toEqual('test');
-  });
-
-  test('should handle request and response without any plugins', async () => {
-    const fetcher = new Fetcher();
-    const request = new Request('https://google.com/');
-    const response = await fetcher.fetch(request);
-
-    expect(response.status).toEqual(200);
-  });
-
-  test('should handle multiple plugins', async () => {
-    const fetcher = new Fetcher();
-    const plugin1 = new TestPlugin();
-    const plugin2 = new TestPlugin();
-    plugin1.onPreRequest = async ({ request, next }) => {
-      request.headers.set('Plugin1', 'test1');
-      next();
-    };
-    plugin2.onPostRequest = async ({ response, pluginManager, next }) => {
-      expect(pluginManager.getModifiedRequest().headers.get('Plugin1')).toEqual(
-        'test1'
+    test('should handle multiple plugins', async () => {
+      const fetcher = new Fetcher();
+      const plugin1 = new RequestModifierPlugin();
+      const plugin2 = new ResponseModifierPlugin();
+      const plugin3 = new DummyPlugin();
+      fetcher.use([plugin1, plugin3, plugin2]);
+      const request = new Request('https://example.com/');
+      const response = await fetcher.fetch(request);
+      // @ts-expect-error - private property
+      const modifiedRequest = fetcher.pluginManager.getModifiedRequest();
+      // @ts-expect-error - private property
+      const modifiedResponse = fetcher.pluginManager.getModifiedResponse();
+      expect(modifiedRequest.headers.get('X-Dummy-Header')).toEqual(
+        'test-request-header',
       );
-      response.headers.set('Plugin2', 'test2');
-      next();
-    };
-
-    fetcher.use(plugin1);
-    fetcher.use(plugin2);
-
-    const request = new Request('https://google.com/');
-    const response = await fetcher.fetch(request);
-
-    expect(response.headers.get('Plugin2')).toEqual('test2');
-  });
-
-  test('should execute plugins in the order they were added', async () => {
-    const fetcher = new Fetcher();
-    const plugin1 = new TestPlugin();
-    const plugin2 = new TestPlugin();
-    const plugin3 = new TestPlugin();
-
-    plugin1.onPreRequest = async ({ request, next }) => {
-      request.headers.set('Order', '1');
-      next();
-    };
-
-    plugin2.onPreRequest = async ({ request, next }) => {
-      request.headers.set('Order', request.headers.get('Order') + '2');
-      next();
-    };
-
-    plugin3.onPreRequest = async ({ request, next }) => {
-      request.headers.set('Order', request.headers.get('Order') + '3');
-      next();
-    };
-    plugin3.onPostRequest = async ({ response, pluginManager, next }) => {
-      expect(pluginManager.getModifiedRequest().headers.get('Order')).toEqual(
-        '123'
+      expect(modifiedRequest.headers.get('X-Custom-Header')).toEqual('test');
+      expect(response.headers.get('X-Custom-Header')).toEqual('test');
+      expect(response.headers.get('X-Dummy-Header')).toEqual(
+        'test-response-header',
       );
-      response.headers.set('Order', '123');
-      next();
-    };
-
-    fetcher.use([plugin1, plugin2, plugin3]);
-
-    const request = new Request('https://google.com/');
-    const response = await fetcher.fetch(request);
-
-    expect(response.status).toEqual(200);
-    expect(response.headers.get('Order')).toEqual('123');
+      expect(response).toBe(modifiedResponse);
+      expect(modifiedRequest).not.toBe(request);
+    });
   });
 
-  test('should handle plugin errors gracefully', async () => {
-    const fetcher = new Fetcher();
-    const plugin = new TestPlugin();
+  describe('Plugin execution order', () => {
+    test('should execute plugins in the order they were added', async () => {
+      const fetcher = new Fetcher();
+      const headerName = 'X-Dummy-Header'; // Matching the header from the Dummy plugin which has both pre-request and post-request hooks
 
-    plugin.onPreRequest = async () => {
-      throw new Error('Test Error');
-    };
+      fetcher.use([
+        new RequestHeaderPluginTwo(headerName, 'test1'),
+        new ResponseHeaderPluginTwo(headerName, 'test-response-1'),
+        new DummyPlugin(),
+        new RequestHeaderPluginTwo(headerName, 'test2'),
+        new ResponseHeaderPluginTwo(headerName, 'test-response-2'),
+        new RequestHeaderPluginTwo(headerName, 'test4'),
+      ]);
+      const request = new Request('https://example.com/');
+      const response = await fetcher.fetch(request);
+      expect(response.status).toEqual(200);
+      // @ts-expect-error - private property
+      const modifiedRequest = fetcher.pluginManager.getModifiedRequest();
+      // @ts-expect-error - private property
+      const modifiedResponse = fetcher.pluginManager.getModifiedResponse();
 
-    fetcher.use(plugin);
+      const expectedOrder = {
+        request: ['test1', 'test-request-header', 'test2', 'test4'],
+        response: [
+          'test-response-1',
+          'test-response-header',
+          'test-response-2',
+        ],
+      };
 
-    const request = new Request('https://google.com/');
-    await expect(fetcher.fetch(request)).rejects.toThrow('Test Error');
+      expect(modifiedRequest.headers.get(headerName)).toEqual(
+        expectedOrder.request.join(','),
+      );
+      expect(modifiedResponse.headers.get(headerName)).toEqual(
+        expectedOrder.response.join(','),
+      );
+      expect(request).not.toBe(modifiedRequest);
+      expect(response).toBe(modifiedResponse);
+    });
   });
 
-  test('should handle when a plugin does not call next', async () => {
-    const fetcher = new Fetcher();
-    const plugin = new TestPlugin();
+  describe('Error handling', () => {
+    test('should handle plugin errors gracefully', async () => {
+      const fetcher = new Fetcher();
+      const plugin = new ErrorPlugin();
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      fetcher.use(plugin);
+      const request = new Request('https://example.com/');
+      expect(await (await fetcher.fetch(request)).status).toBe(200);
+      expect(spy).toHaveBeenCalledWith(
+        'Error in plugin: Error: This is a dummy error',
+      );
+      spy.mockRestore();
+    });
 
-    plugin.onPreRequest = async () => {
-      // do not call next
-    };
-
-    fetcher.use(plugin);
-
-    const request = new Request('https://google.com/');
-    const response = await fetcher.fetch(request);
-
-    expect(response.status).toEqual(200);
+    test('should handle when a plugin does not call next', async () => {
+      const fetcher = new Fetcher();
+      const plugin = new TimeoutPlugin();
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      fetcher.use(plugin);
+      const request = new Request('https://example.com/');
+      const response = await fetcher.fetch(request);
+      expect(response.status).toEqual(200);
+      expect(spy).toHaveBeenCalledWith('Plugin timed out: TimeoutPlugin');
+      spy.mockRestore();
+    });
   });
 
-  test('should only call each plugin once during a lifecycle', async () => {
-    const fetcher = new Fetcher();
-    const plugin1 = new TestPlugin();
-    const plugin2 = new TestPlugin();
-    const plugin3 = new TestPlugin();
-
-    const counters = {
-      plugin1: 0,
-      plugin2: 0,
-      plugin3: 0,
-    };
-
-    plugin1.onPreRequest = async ({ next }) => {
-      counters.plugin1++;
-      next();
-    };
-
-    plugin2.onPreRequest = async ({ next }) => {
-      counters.plugin2++;
-      next();
-    };
-
-    plugin3.onPreRequest = async ({ next }) => {
-      counters.plugin3++;
-      next();
-    };
-    plugin3.onPostRequest = async ({ next }) => {
-      counters.plugin3++;
-      next();
-    };
-
-    fetcher.use(plugin1);
-    fetcher.use(plugin2);
-    fetcher.use(plugin3);
-
-    await fetcher.fetch('https://google.com/');
-
-    expect(counters.plugin1).toEqual(1);
-    expect(counters.plugin2).toEqual(1);
-    expect(counters.plugin3).toEqual(2);
+  describe('Plugin lifecycle', () => {
+    test('should only call each plugin once during a lifecycle', async () => {
+      const fetcher = new Fetcher();
+      const plugin = new CountingPlugin();
+      const plugin2 = new CountingPlugin();
+      fetcher.use([plugin, plugin2, plugin2]);
+      await fetcher.fetch('https://example.com/');
+      expect(plugin.callCount).toEqual(1);
+      expect(plugin2.callCount).toEqual(1);
+    });
   });
 });

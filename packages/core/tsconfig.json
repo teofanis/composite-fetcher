@@ -5,6 +5,8 @@
     "outDir": "dist",
     "target": "ES2016",
     "lib": ["ESNext", "DOM"],
+    "types": ["jest", "node"],
+    "typeRoots": ["node_modules/@types"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
