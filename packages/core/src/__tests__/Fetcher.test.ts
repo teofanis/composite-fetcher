@@ -1,5 +1,5 @@
-import Fetcher from '@/Fetcher';
 import _fetchMock from 'isomorphic-fetch';
+import Fetcher from '@/Fetcher';
 import {
   DummyPlugin,
   ResponseModifierPlugin,
@@ -74,9 +74,9 @@ describe('Fetcher', () => {
       const headerName = 'X-Dummy-Header'; // Matching the header from the Dummy plugin which has both pre-request and post-request hooks
 
       fetcher.use([
+        new DummyPlugin(),
         new RequestHeaderPluginTwo(headerName, 'test1'),
         new ResponseHeaderPluginTwo(headerName, 'test-response-1'),
-        new DummyPlugin(),
         new RequestHeaderPluginTwo(headerName, 'test2'),
         new ResponseHeaderPluginTwo(headerName, 'test-response-2'),
         new RequestHeaderPluginTwo(headerName, 'test4'),
@@ -90,10 +90,10 @@ describe('Fetcher', () => {
       const modifiedResponse = fetcher.pluginManager.getModifiedResponse();
 
       const expectedOrder = {
-        request: ['test1', 'test-request-header', 'test2', 'test4'],
+        request: ['test-request-header', 'test1', 'test2', 'test4'],
         response: [
-          'test-response-1',
           'test-response-header',
+          'test-response-1',
           'test-response-2',
         ],
       };
