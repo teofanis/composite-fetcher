@@ -23,6 +23,7 @@ module.exports = {
       statements: 75,
     },
   },
+  testPathIgnorePatterns: ['testUtils.ts'],
   transformIgnorePatterns: [],
   coverageReporters: ['json-summary', 'text', 'lcov'],
   coverageDirectory: '<rootDir>/coverage',
