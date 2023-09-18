@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@composite-fetcher/tsconfig": "workspace:*",
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.0",
     "eslint": "^8.49.0",
     "@composite-fetcher/eslint-config": "workspace:*",
