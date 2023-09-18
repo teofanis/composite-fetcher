@@ -32,7 +32,7 @@
     "changeset-conventional-commits": "^0.2.1",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^7.32.0",
+    "eslint": "^8.49.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "plop": "^4.0.0",
