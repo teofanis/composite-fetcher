@@ -36,7 +36,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "plop": "^4.0.0",
-    "prettier": "^2.5.1",
+    "prettier": "^3.0.3",
     "turbo": "latest"
   },
   "config": {
