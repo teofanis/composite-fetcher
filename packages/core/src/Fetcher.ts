@@ -1,7 +1,6 @@
-import fetch from 'isomorphic-fetch';
-
-import { Plugin } from '@/interfaces';
+import type { Plugin } from '@/interfaces';
 import PluginManager from '@/lib/PluginManager';
+import fetch from 'isomorphic-fetch';
 
 export default class Fetcher {
   private pluginManager = new PluginManager();

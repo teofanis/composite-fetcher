@@ -1,4 +1,7 @@
 module.exports = {
   root: true,
   extends: ['@composite-fetcher/eslint-config/base'],
+  parserOptions: {
+    project: ['packages/{{name}}/tsconfig.json', './tsconfig.json'],
+  },
 };
