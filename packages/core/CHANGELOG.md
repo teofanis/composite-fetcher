@@ -1,5 +1,11 @@
 # @composite-fetcher/core
 
+## 0.0.3
+
+### Patch Changes
+
+- [#28](https://github.com/teofanis/composite-fetcher/pull/28) [`9e98a85`](https://github.com/teofanis/composite-fetcher/commit/9e98a85021c0c89b7842e9a28a927f47a7c23637) Thanks [@teofanis](https://github.com/teofanis)! - refactor(NO-JIRA): improve tsconfig
+
 ## 0.0.2
 
 ### Patch Changes
