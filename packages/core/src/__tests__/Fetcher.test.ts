@@ -1,14 +1,14 @@
-import _fetchMock from 'isomorphic-fetch';
 import Fetcher from '@/Fetcher';
+import _fetchMock from 'isomorphic-fetch';
 import {
-  DummyPlugin,
-  ResponseModifierPlugin,
-  RequestModifierPlugin,
-  ErrorPlugin,
-  TimeoutPlugin,
   CountingPlugin,
+  DummyPlugin,
+  ErrorPlugin,
   RequestHeaderPluginTwo,
+  RequestModifierPlugin,
   ResponseHeaderPluginTwo,
+  ResponseModifierPlugin,
+  TimeoutPlugin,
 } from './testUtils';
 
 type FetchMock = typeof import('fetch-mock');

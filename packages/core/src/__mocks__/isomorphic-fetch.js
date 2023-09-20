@@ -1,5 +1,6 @@
-const fetchMock = require('fetch-mock');
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { sandbox } from 'fetch-mock';
 
-const fetch = fetchMock.sandbox();
+const fetch = sandbox();
 
-module.exports = fetch;
+export default fetch;
