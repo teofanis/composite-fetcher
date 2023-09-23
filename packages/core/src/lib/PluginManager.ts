@@ -3,8 +3,8 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable import/no-cycle */
 import {
-  Plugin,
-  PluginHandlerContext,
+  type Plugin,
+  type PluginHandlerContext,
   PluginLifecycleHook,
 } from '@/interfaces';
 
@@ -73,7 +73,7 @@ export default class PluginManager {
         return;
       }
 
-      const plugin = this.plugins[index];
+      const plugin = this.plugins[index]!;
 
       if (this.hasBeenProcessed(plugin, hook)) {
         index++;

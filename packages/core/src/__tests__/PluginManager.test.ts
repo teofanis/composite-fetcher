@@ -3,15 +3,15 @@ import _fetchMock from 'isomorphic-fetch';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import fetchMockModule from 'fetch-mock';
 import {
+  CountingPlugin,
   DummyPlugin,
+  ErrorPlugin,
+  MultipleNextPlugin,
+  RequestHeaderPluginTwo,
+  RequestModifierPlugin,
+  ResponseHeaderPluginTwo,
   ResponseModifierPlugin,
   TimeoutPlugin,
-  ErrorPlugin,
-  RequestModifierPlugin,
-  RequestHeaderPluginTwo,
-  MultipleNextPlugin,
-  CountingPlugin,
-  ResponseHeaderPluginTwo,
 } from './testUtils';
 
 type FetchMock = typeof fetchMockModule;
@@ -55,7 +55,7 @@ describe('PluginManager', () => {
       expect(pm.getPlugins()).toHaveLength(2);
       const addedPlugins = pm.getPlugins();
       addedPlugins.forEach((plugin, index) => {
-        expect(plugin).toBeInstanceOf(pluginsToAdd[index].constructor);
+        expect(plugin).toBeInstanceOf(pluginsToAdd[index]!.constructor);
         expect(plugin).toBe(pluginsToAdd[index]);
       });
     });

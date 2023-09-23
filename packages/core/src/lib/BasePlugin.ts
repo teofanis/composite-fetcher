@@ -1,6 +1,6 @@
 import {
-  Plugin,
-  PluginHandlerContext,
+  type Plugin,
+  type PluginHandlerContext,
   PluginLifecycleHook,
 } from '@/interfaces';
 

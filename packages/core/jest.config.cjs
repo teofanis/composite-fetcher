@@ -1,10 +1,17 @@
 module.exports = {
+  preset: 'ts-jest',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
-    '^.+\\.ts?$': 'ts-jest',
+    '^.+\\.(j|t)s?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.jest.json',
+      },
+    ],
   },
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   resetModules: false,
   clearMocks: true,
   collectCoverage: true,
@@ -27,5 +34,5 @@ module.exports = {
   transformIgnorePatterns: [],
   coverageReporters: ['json-summary', 'text', 'lcov'],
   coverageDirectory: '<rootDir>/coverage',
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-environment-node',
 };

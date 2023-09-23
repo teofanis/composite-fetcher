@@ -1,6 +1,6 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { sandbox } from 'fetch-mock';
+// eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-var-requires
+const fetchMock = require('fetch-mock');
 
-const fetch = sandbox();
+const fetch = fetchMock.sandbox();
 
-export default fetch;
+module.exports = fetch;
