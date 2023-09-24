@@ -1,5 +1,11 @@
 # @composite-fetcher/core
 
+## 0.1.0
+
+### Minor Changes
+
+- [#31](https://github.com/teofanis/composite-fetcher/pull/31) [`0fefbbb`](https://github.com/teofanis/composite-fetcher/commit/0fefbbb7e4fef34920b4ef16b8c66743dec47977) Thanks [@teofanis](https://github.com/teofanis)! - feat(core): allow plugins to return responses early
+
 ## 0.0.3
 
 ### Patch Changes
