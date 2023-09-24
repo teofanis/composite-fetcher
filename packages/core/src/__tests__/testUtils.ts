@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-classes-per-file */
-import { PluginHandlerContext, PluginLifecycleHook } from '@/interfaces';
+import { type PluginHandlerContext, PluginLifecycleHook } from '@/interfaces';
 import BasePlugin from '@/lib/BasePlugin';
 
 export class DummyPlugin extends BasePlugin {
@@ -128,6 +128,35 @@ export class ResponseHeaderPluginTwo extends BasePlugin {
         ? `${currentHeaderValue},${this.headerValue}`
         : this.headerValue,
     );
+    context.next();
+  }
+}
+
+export class EarlyReturnPlugin extends BasePlugin {
+  async onPreRequest(): Promise<void | Response> {
+    return new Response('Mock response', {
+      status: 418,
+    });
+  }
+}
+export class EarlyResponsePostRequestPlugin extends BasePlugin {
+  async onPostRequest(): Promise<Response> {
+    return new Response('Early response from plugin!', {
+      status: 418,
+    });
+  }
+}
+
+export class PassThroughPlugin extends BasePlugin {
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
+  ): Promise<void> {
+    context.next();
+  }
+
+  async onPostRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
+  ): Promise<void> {
     context.next();
   }
 }

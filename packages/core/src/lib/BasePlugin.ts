@@ -9,13 +9,13 @@ export default abstract class BasePlugin implements Plugin {
 
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
-  ): Promise<void> {
+  ): Promise<void | Response> {
     context.next();
   }
 
   async onPostRequest(
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
-  ): Promise<void> {
+  ): Promise<void | Response> {
     context.next();
   }
 }

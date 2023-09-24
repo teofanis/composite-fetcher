@@ -63,7 +63,7 @@ export default class PluginManager {
     const isPreRequestContext = this.isPreRequestContext(context);
     const isPostRequestContext = this.isPostRequestContext(context);
 
-    const next = () => {
+    const next = async () => {
       if (index >= this.plugins.length) {
         if (isPreRequestContext) {
           resolve(context.request);
@@ -96,16 +96,23 @@ export default class PluginManager {
         next();
       };
 
-      Promise.resolve(plugin[method]?.(context as any)).catch((error) => {
+      const result = await plugin[method]?.(context as any).catch((error) => {
         console.error(`Error in plugin: ${error}`);
         context.next();
       });
+
+      if (result instanceof Response) {
+        resolve(result);
+        return;
+      }
+
+      context.next();
     };
 
     next();
   }
 
-  runPreRequestHooks(request: Request): Promise<Request> {
+  runPreRequestHooks(request: Request): Promise<Request | Response> {
     return new Promise((resolve) => {
       this.modifiedRequest = request.clone();
       const context = {
