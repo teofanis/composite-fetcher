@@ -199,7 +199,7 @@ describe('Fetcher with early exit from preRequest hook', () => {
     });
 
     const fetcher = new Fetcher();
-
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const passThroughPlugin = new PassThroughPlugin();
     const errorPlugin = new ErrorPlugin();
     const requestModifierPlugin = new RequestModifierPlugin();
@@ -215,5 +215,8 @@ describe('Fetcher with early exit from preRequest hook', () => {
       // Check that the requestModifierPlugin didn't modify the request
       expect(request.headers.get('X-Custom-Header')).toBeNull();
     }
+    expect(spy).toHaveBeenCalledWith(
+      'Error in plugin: Error: This is a dummy error',
+    );
   });
 });

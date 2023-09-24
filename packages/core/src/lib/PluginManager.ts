@@ -98,10 +98,12 @@ export default class PluginManager {
 
       const result = await plugin[method]?.(context as any).catch((error) => {
         console.error(`Error in plugin: ${error}`);
+        clearTimeout(timeout);
         context.next();
       });
 
       if (result instanceof Response) {
+        clearTimeout(timeout);
         resolve(result);
         return;
       }
