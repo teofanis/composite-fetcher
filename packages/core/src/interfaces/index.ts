@@ -31,8 +31,8 @@ export interface Plugin {
   pluginTimeout?: number;
   onPreRequest?: (
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
-  ) => Promise<void>;
+  ) => Promise<void | Response>;
   onPostRequest?: (
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
-  ) => Promise<void>;
+  ) => Promise<void | Response>;
 }

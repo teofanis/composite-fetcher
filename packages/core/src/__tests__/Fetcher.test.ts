@@ -3,7 +3,10 @@ import _fetchMock from 'isomorphic-fetch';
 import {
   CountingPlugin,
   DummyPlugin,
+  EarlyResponsePostRequestPlugin,
+  EarlyReturnPlugin,
   ErrorPlugin,
+  PassThroughPlugin,
   RequestHeaderPluginTwo,
   RequestModifierPlugin,
   ResponseHeaderPluginTwo,
@@ -146,5 +149,74 @@ describe('Fetcher', () => {
       expect(plugin.callCount).toEqual(1);
       expect(plugin2.callCount).toEqual(1);
     });
+  });
+
+  describe('Plugin returning Response behavior', () => {
+    test('should return response from plugin without executing the fetch', async () => {
+      const fetcher = new Fetcher();
+
+      fetcher.use(new EarlyReturnPlugin());
+      const request = new Request('https://example.com/');
+      const response = await fetcher.fetch(request);
+
+      expect(response.status).toEqual(418);
+      expect(await response.text()).toEqual('Mock response');
+
+      // Ensure actual fetch was not called
+      expect(fetchMock.calls().length).toBe(0);
+    });
+  });
+});
+
+describe('Fetcher with early response from postRequest hook', () => {
+  test('should return early response from onPostRequest even if there are multiple plugins', async () => {
+    fetchMock.get('https://example2.com/', {
+      status: 200,
+      body: 'Original response',
+    });
+
+    const fetcher = new Fetcher();
+    fetcher.use([
+      new PassThroughPlugin(),
+      new EarlyResponsePostRequestPlugin(),
+      new PassThroughPlugin(),
+    ]);
+
+    const request = new Request('https://example2.com/');
+    const response = await fetcher.fetch(request);
+    const responseBody = await response.text();
+
+    expect(response.status).toEqual(418);
+    expect(responseBody).toEqual('Early response from plugin!');
+  });
+});
+
+describe('Fetcher with early exit from preRequest hook', () => {
+  test('should handle early exit from onPreRequest and not execute subsequent plugins', async () => {
+    fetchMock.get('https://example3.com/', {
+      status: 200,
+      body: 'Original response',
+    });
+
+    const fetcher = new Fetcher();
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const passThroughPlugin = new PassThroughPlugin();
+    const errorPlugin = new ErrorPlugin();
+    const requestModifierPlugin = new RequestModifierPlugin();
+
+    fetcher.use([passThroughPlugin, errorPlugin, requestModifierPlugin]);
+
+    const request = new Request('https://example3.com/');
+    try {
+      await fetcher.fetch(request);
+      // This part of the code should not be reached
+      expect(true).toBe(false);
+    } catch (error) {
+      // Check that the requestModifierPlugin didn't modify the request
+      expect(request.headers.get('X-Custom-Header')).toBeNull();
+    }
+    expect(spy).toHaveBeenCalledWith(
+      'Error in plugin: Error: This is a dummy error',
+    );
   });
 });
