@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ConsoleLogger } from '@/ConsoleLogger';
 import type { Logger } from '@/interfaces';
 

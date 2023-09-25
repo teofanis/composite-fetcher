@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable import/prefer-default-export */
 import type { Logger } from '@/interfaces';
 
 export class ConsoleLogger implements Logger {

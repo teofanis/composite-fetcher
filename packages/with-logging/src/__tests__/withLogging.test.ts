@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable new-cap */
 import { ConsoleLogger } from '@/ConsoleLogger';
-import { Fetcher } from '@composite-fetcher/core';
 import type { Logger } from '@/interfaces';
 import withLoggingPlugin from '@/withLogging';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 global.fetch = jest.fn(() =>
   Promise.resolve(new Response('test response', { status: 200 })),
@@ -84,6 +86,7 @@ describe('withLoggingPlugin', () => {
 
   it('uses ConsoleLogger by default if no logger is provided', () => {
     const defaultPlugin = new withLoggingPlugin();
-    expect(defaultPlugin['logger']).toBeInstanceOf(ConsoleLogger);
+    // @ts-expect-error - private property
+    expect(defaultPlugin.logger).toBeInstanceOf(ConsoleLogger);
   });
 });

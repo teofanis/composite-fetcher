@@ -35,5 +35,8 @@
   },
   "dependencies": {
     "@composite-fetcher/core": "^0.1.0"
+  },
+  "peerDependencies": {
+    "@composite-fetcher/core": "^0.1.0"
   }
 }
