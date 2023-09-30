@@ -1,5 +1,15 @@
 # @composite-fetcher/core
 
+## 0.1.1
+
+### Patch Changes
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps): regenerate `pnpm-lock.yaml`
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - Merge remote-tracking branch 'origin/main' into with-logging
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps-dev): bump @types/node from 20.6.2 to 20.7.0 (#35)
+
 ## 0.1.0
 
 ### Minor Changes

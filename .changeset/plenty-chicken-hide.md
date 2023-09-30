@@ -1,6 +1,7 @@
 ---
 '@composite-fetcher/core': patch
 '@composite-fetcher/eslint-config': patch
+'@composite-fetcher/with-logging': patch
 ---
 
-chore(deps): regenerate `pnpm-lock.yaml`
+ci(changesets): update changesets
