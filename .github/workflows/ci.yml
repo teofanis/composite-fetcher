@@ -26,6 +26,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
+      - name: Build Project
+        run: pnpm run build
+
       - name: Run lint
         run: pnpm run lint
 

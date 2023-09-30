@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
   PluginHandlerContext,
@@ -21,7 +22,9 @@ export default class withLoggingPlugin {
     const logContext = {
       method: context.request.method,
       headers: Array.from(context.request.headers.entries()).reduce(
+        // @ts-ignore
         (acc, [key, value]) => {
+          // @ts-ignore
           acc[key] = value;
           return acc;
         },
@@ -40,7 +43,9 @@ export default class withLoggingPlugin {
       status: context.response.status,
       statusText: context.response.statusText,
       headers: Array.from(context.response.headers.entries()).reduce(
+        // @ts-ignore
         (acc, [key, value]) => {
+          // @ts-ignore
           acc[key] = value;
           return acc;
         },
