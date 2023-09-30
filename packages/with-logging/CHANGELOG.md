@@ -1,5 +1,14 @@
 # @composite-fetcher/with-logging
 
+## 0.2.2
+
+### Patch Changes
+
+- [`7cc230a`](https://github.com/teofanis/composite-fetcher/commit/7cc230a2ebfe398291a7c0bef176710e88128d8e) Thanks [@teofanis](https://github.com/teofanis)! - fix(withLogging): change incomming to outgoing log
+
+- Updated dependencies [[`0d517f0`](https://github.com/teofanis/composite-fetcher/commit/0d517f0248aa71db50d2a52fb4bd08a71d7f7674)]:
+  - @composite-fetcher/core@0.1.4
+
 ## 0.2.1
 
 ### Patch Changes

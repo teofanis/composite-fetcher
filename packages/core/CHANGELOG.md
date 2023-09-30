@@ -1,5 +1,11 @@
 # @composite-fetcher/core
 
+## 0.1.4
+
+### Patch Changes
+
+- [`0d517f0`](https://github.com/teofanis/composite-fetcher/commit/0d517f0248aa71db50d2a52fb4bd08a71d7f7674) Thanks [@teofanis](https://github.com/teofanis)! - test(core): add test to ensure error responses still pass through the onion
+
 ## 0.1.3
 
 ### Patch Changes
