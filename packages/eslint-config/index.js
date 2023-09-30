@@ -1,6 +1,6 @@
 
 module.exports = {
-  extends: ['./base', 'next'],
+  extends: ['./base.js', 'next'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
     'react/jsx-filename-extension': [

@@ -4,6 +4,10 @@
       "name": "Fetcher Core",
       "path": "packages/core"
     },
+      {
+      "name": "withLogging Plugin",
+      "path": "packages/with-logging"
+    },
     {
       "name": "Docs",
       "path": "apps/docs"
@@ -64,6 +68,12 @@
       "esbenp",
       "Gruntfuggly",
       "Orta"
+    ],
+    "jest.disabledWorkspaceFolders": [
+      "Root",
+      "Utils",
+      "Examples",
+      "Docs"
     ]
   },
   "extensions": {
