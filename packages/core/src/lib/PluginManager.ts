@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 /* eslint-disable no-plusplus */
@@ -11,14 +12,16 @@ import {
 export default class PluginManager {
   private plugins: Plugin[] = [];
 
+  private requestIdCounter = 0;
+
   private modifiedRequest!: Request;
 
   private modifiedResponse!: Response;
 
-  private processedHooks: Record<PluginLifecycleHook, Set<Plugin>> = {
-    preRequest: new Set<Plugin>(),
-    postRequest: new Set<Plugin>(),
-  };
+  private processedHooks: Map<
+    number,
+    Record<PluginLifecycleHook, Set<Plugin>>
+  > = new Map();
 
   addPlugins(plugin: Plugin | Plugin[]): void {
     if (Array.isArray(plugin)) {
@@ -28,8 +31,16 @@ export default class PluginManager {
     }
   }
 
-  private hasBeenProcessed(plugin: Plugin, hook: PluginLifecycleHook): boolean {
-    return this.processedHooks[hook].has(plugin);
+  private hasBeenProcessed(
+    requestId: number,
+    plugin: Plugin,
+    hook: PluginLifecycleHook,
+  ): boolean {
+    if (!this.processedHooks.has(requestId)) {
+      return false;
+    }
+    const hooksForRequest = this.processedHooks.get(requestId)!;
+    return hooksForRequest && hooksForRequest[hook].has(plugin);
   }
 
   private isPreRequestContext(
@@ -53,6 +64,7 @@ export default class PluginManager {
   }
 
   private processPlugins<T>(
+    requestId: number,
     hook: PluginLifecycleHook,
     context: T extends PluginLifecycleHook.PRE_REQUEST
       ? PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>
@@ -75,14 +87,14 @@ export default class PluginManager {
 
       const plugin = this.plugins[index]!;
 
-      if (this.hasBeenProcessed(plugin, hook)) {
+      if (this.hasBeenProcessed(requestId, plugin, hook)) {
         index++;
         next();
         return;
       }
 
       index++;
-      this.processedHooks[hook].add(plugin);
+      this.processedHooks.get(requestId)![hook].add(plugin);
 
       const timeout = setTimeout(() => {
         console.error(`Plugin timed out: ${plugin.constructor.name}`);
@@ -114,7 +126,10 @@ export default class PluginManager {
     next();
   }
 
-  runPreRequestHooks(request: Request): Promise<Request | Response> {
+  runPreRequestHooks(
+    requestId: number,
+    request: Request,
+  ): Promise<Request | Response> {
     return new Promise((resolve) => {
       this.modifiedRequest = request.clone();
       const context = {
@@ -125,6 +140,7 @@ export default class PluginManager {
       } as PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>;
 
       this.processPlugins<PluginLifecycleHook.PRE_REQUEST>(
+        requestId,
         PluginLifecycleHook.PRE_REQUEST,
         context,
         resolve as any,
@@ -133,6 +149,7 @@ export default class PluginManager {
   }
 
   runPostRequestHooks(
+    requestId: number,
     response: Response,
     originalRequest: Request,
   ): Promise<Response> {
@@ -146,6 +163,7 @@ export default class PluginManager {
       } as PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>;
 
       this.processPlugins<PluginLifecycleHook.POST_REQUEST>(
+        requestId,
         PluginLifecycleHook.POST_REQUEST,
         context,
         resolve as any,
@@ -163,5 +181,18 @@ export default class PluginManager {
 
   getPlugins(): Plugin[] {
     return this.plugins;
+  }
+
+  public generateNewRequestId(): number {
+    const newId = this.requestIdCounter++;
+    this.processedHooks.set(newId, {
+      preRequest: new Set<Plugin>(),
+      postRequest: new Set<Plugin>(),
+    });
+    return newId;
+  }
+
+  public clearProcessedPlugins(requestId: number) {
+    this.processedHooks.delete(requestId);
   }
 }

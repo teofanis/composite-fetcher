@@ -31,6 +31,24 @@ export class ErrorPlugin extends BasePlugin {
     throw new Error('This is a dummy error');
   }
 }
+
+export class LogPlugin extends BasePlugin {
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
+  ): Promise<void> {
+    const { next, request } = context;
+    console.log('request to', request.url);
+    next();
+  }
+
+  async onPostRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
+  ): Promise<Response | void> {
+    const { next, response } = context;
+    console.log('response from', response.url);
+    next();
+  }
+}
 export class TimeoutPlugin extends BasePlugin {
   pluginTimeout = 1000;
 

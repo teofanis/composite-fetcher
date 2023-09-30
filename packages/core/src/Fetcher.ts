@@ -10,8 +10,11 @@ export default class Fetcher {
   }
 
   async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
+    const requestId = this.pluginManager.generateNewRequestId();
+
     const originalRequest = new Request(input, init);
     const modifiedRequest = await this.pluginManager.runPreRequestHooks(
+      requestId,
       originalRequest.clone(),
     );
     if (modifiedRequest instanceof Response) {
@@ -19,9 +22,11 @@ export default class Fetcher {
     }
     const response = await fetch(modifiedRequest);
     const modifiedResponse = await this.pluginManager.runPostRequestHooks(
+      requestId,
       response.clone(),
       originalRequest.clone(),
     );
+    this.pluginManager.clearProcessedPlugins(requestId);
     return modifiedResponse;
   }
 }

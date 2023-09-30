@@ -1,3 +1,4 @@
+import type { Plugin } from '@/interfaces';
 import PluginManager from '@/lib/PluginManager';
 import _fetchMock from 'isomorphic-fetch';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -19,12 +20,15 @@ const fetchMock = _fetchMock as unknown as FetchMock;
 
 describe('PluginManager', () => {
   let pm: PluginManager;
+  let currentRequestId: number;
+
   beforeEach(() => {
     fetchMock.restore();
     fetchMock.reset();
     global.Request = fetchMock.config.Request as unknown as typeof Request;
     global.Response = fetchMock.config.Response as unknown as typeof Response;
     pm = new PluginManager();
+    currentRequestId = pm.generateNewRequestId();
   });
 
   describe('Plugin addition', () => {
@@ -68,7 +72,10 @@ describe('PluginManager', () => {
   describe('Pre-request hooks', () => {
     test('should run pre-request hooks', async () => {
       pm.addPlugins(new RequestModifierPlugin());
-      const request = await pm.runPreRequestHooks(new Request('/test'));
+      const request = await pm.runPreRequestHooks(
+        currentRequestId,
+        new Request('/test'),
+      );
       expect(request.headers.get('X-Custom-Header')).toEqual('test');
     });
 
@@ -77,7 +84,10 @@ describe('PluginManager', () => {
       const consoleErrorSpy = jest
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      const request = await pm.runPreRequestHooks(new Request('/test'));
+      const request = await pm.runPreRequestHooks(
+        currentRequestId,
+        new Request('/test'),
+      );
       expect(request.headers.get('X-Custom-Header')).toEqual('test');
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -94,7 +104,10 @@ describe('PluginManager', () => {
         new RequestHeaderPluginTwo(headerName, 'value3'),
         new RequestHeaderPluginTwo(headerName, 'value2'),
       ]);
-      const request = await pm.runPreRequestHooks(new Request('/test'));
+      const request = await pm.runPreRequestHooks(
+        currentRequestId,
+        new Request('/test'),
+      );
       expect(request.headers.get(headerName)).toEqual(
         'value1,value4,value3,value2',
       );
@@ -105,7 +118,7 @@ describe('PluginManager', () => {
       const consoleErrorSpy = jest
         .spyOn(console, 'error')
         .mockImplementation(() => {});
-      await pm.runPreRequestHooks(new Request('/test'));
+      await pm.runPreRequestHooks(currentRequestId, new Request('/test'));
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'Plugin timed out: TimeoutPlugin',
@@ -116,7 +129,7 @@ describe('PluginManager', () => {
     test('should not process a plugin multiple times if next is called multiple times', async () => {
       const plugin = new MultipleNextPlugin();
       pm.addPlugins([plugin]);
-      await pm.runPreRequestHooks(new Request('/test'));
+      await pm.runPreRequestHooks(currentRequestId, new Request('/test'));
       expect(plugin.callCount).toEqual(1);
     });
 
@@ -125,11 +138,11 @@ describe('PluginManager', () => {
       const plugin2 = new CountingPlugin();
 
       pm.addPlugins(plugin1);
-      await pm.runPreRequestHooks(new Request('/test1'));
+      await pm.runPreRequestHooks(currentRequestId, new Request('/test1'));
 
       pm.addPlugins(plugin2);
       pm.addPlugins(plugin1);
-      await pm.runPreRequestHooks(new Request('/test2'));
+      await pm.runPreRequestHooks(currentRequestId, new Request('/test2'));
 
       expect(plugin1.callCount).toEqual(1);
       expect(plugin2.callCount).toEqual(1);
@@ -140,7 +153,7 @@ describe('PluginManager', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
       pm.addPlugins(new ErrorPlugin());
-      await pm.runPreRequestHooks(new Request('/test'));
+      await pm.runPreRequestHooks(currentRequestId, new Request('/test'));
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'Error in plugin: Error: This is a dummy error',
@@ -152,7 +165,10 @@ describe('PluginManager', () => {
       pm.addPlugins(
         new RequestHeaderPluginTwo('X-Modified-By', 'PluginManagerTest'),
       );
-      const result = await pm.runPreRequestHooks(new Request('/test'));
+      const result = await pm.runPreRequestHooks(
+        currentRequestId,
+        new Request('/test'),
+      );
       const request = pm.getModifiedRequest();
       expect(request).toBe(result);
       expect(request.headers.get('X-Modified-By')).toEqual('PluginManagerTest');
@@ -166,6 +182,7 @@ describe('PluginManager', () => {
         headers: { 'Content-Type': 'text/plain' },
       });
       const response = await pm.runPostRequestHooks(
+        currentRequestId,
         originalResponse,
         new Request('/test'),
       );
@@ -182,6 +199,7 @@ describe('PluginManager', () => {
         headers: { 'Content-Type': 'text/plain' },
       });
       const response = await pm.runPostRequestHooks(
+        currentRequestId,
         originalResponse,
         new Request('/test'),
       );
@@ -203,6 +221,7 @@ describe('PluginManager', () => {
         headers: { 'Content-Type': 'text/plain' },
       });
       const response = await pm.runPostRequestHooks(
+        currentRequestId,
         originalResponse,
         new Request('/test'),
       );
@@ -223,6 +242,7 @@ describe('PluginManager', () => {
         headers: { 'Content-Type': 'text/plain' },
       });
       const result = await pm.runPostRequestHooks(
+        currentRequestId,
         originalResponse,
         new Request('/test'),
       );
@@ -232,6 +252,42 @@ describe('PluginManager', () => {
       expect(response.headers.get('X-Modified-By')).toEqual(
         'PluginManagerTest',
       );
+    });
+  });
+
+  describe('Request ID Management', () => {
+    test('should generate unique request IDs', () => {
+      const id1 = pm.generateNewRequestId();
+      const id2 = pm.generateNewRequestId();
+      expect(id1).not.toEqual(id2);
+    });
+
+    test('should clear processed plugins for a request ID', async () => {
+      const requestId = pm.generateNewRequestId();
+      pm.addPlugins(new RequestModifierPlugin());
+      await pm.runPreRequestHooks(requestId, new Request('/test'));
+      pm.clearProcessedPlugins(requestId);
+      // @ts-expect-error - private property
+      expect(pm.processedHooks.has(requestId)).toBe(false);
+    });
+
+    test('should reprocess plugins after clearing processed plugins for a request ID', async () => {
+      const requestId = pm.generateNewRequestId();
+      const plugin = new CountingPlugin();
+      pm.addPlugins(plugin);
+      await pm.runPreRequestHooks(requestId, new Request('/test'));
+      expect(plugin.callCount).toEqual(1);
+
+      pm.clearProcessedPlugins(requestId);
+
+      // set the requestId map since its deleted by clearProcessedPlugins - cant happen via the fetcher
+      // @ts-expect-error - private property
+      pm.processedHooks.set(requestId, {
+        preRequest: new Set<Plugin>(),
+        postRequest: new Set<Plugin>(),
+      });
+      await pm.runPreRequestHooks(requestId, new Request('/test'));
+      expect(plugin.callCount).toEqual(2); // Plugin is invoked again because its processing was cleared
     });
   });
 });

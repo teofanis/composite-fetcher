@@ -6,6 +6,7 @@ import {
   EarlyResponsePostRequestPlugin,
   EarlyReturnPlugin,
   ErrorPlugin,
+  LogPlugin,
   PassThroughPlugin,
   RequestHeaderPluginTwo,
   RequestModifierPlugin,
@@ -149,6 +150,17 @@ describe('Fetcher', () => {
       expect(plugin.callCount).toEqual(1);
       expect(plugin2.callCount).toEqual(1);
     });
+    test('should call each plugin once per fetch call', async () => {
+      const fetcher = new Fetcher();
+      const plugin = new LogPlugin();
+      fetcher.use(plugin);
+      const spy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      await fetcher.fetch('https://example.com/');
+      await fetcher.fetch('https://example.com/');
+
+      expect(spy).toHaveBeenCalledTimes(4); // 2 calls to onPreRequest and 2 calls to onPostRequest * (2 fetch calls)
+      spy.mockRestore();
+    });
   });
 
   describe('Plugin returning Response behavior', () => {
@@ -166,81 +178,81 @@ describe('Fetcher', () => {
       expect(fetchMock.calls().length).toBe(0);
     });
   });
-});
 
-describe('Fetcher with early response from postRequest hook', () => {
-  test('should return early response from onPostRequest even if there are multiple plugins', async () => {
-    fetchMock.get('https://example2.com/', {
-      status: 200,
-      body: 'Original response',
+  describe('Fetcher with early response from postRequest hook', () => {
+    test('should return early response from onPostRequest even if there are multiple plugins', async () => {
+      fetchMock.get('https://example2.com/', {
+        status: 200,
+        body: 'Original response',
+      });
+
+      const fetcher = new Fetcher();
+      fetcher.use([
+        new PassThroughPlugin(),
+        new EarlyResponsePostRequestPlugin(),
+        new PassThroughPlugin(),
+      ]);
+
+      const request = new Request('https://example2.com/');
+      const response = await fetcher.fetch(request);
+      const responseBody = await response.text();
+
+      expect(response.status).toEqual(418);
+      expect(responseBody).toEqual('Early response from plugin!');
     });
-
-    const fetcher = new Fetcher();
-    fetcher.use([
-      new PassThroughPlugin(),
-      new EarlyResponsePostRequestPlugin(),
-      new PassThroughPlugin(),
-    ]);
-
-    const request = new Request('https://example2.com/');
-    const response = await fetcher.fetch(request);
-    const responseBody = await response.text();
-
-    expect(response.status).toEqual(418);
-    expect(responseBody).toEqual('Early response from plugin!');
   });
-});
 
-describe('Fetcher with early exit from preRequest hook', () => {
-  test('should handle early exit from onPreRequest and not execute subsequent plugins', async () => {
-    fetchMock.get('https://example3.com/', {
-      status: 200,
-      body: 'Original response',
+  describe('Fetcher with early exit from preRequest hook', () => {
+    test('should handle early exit from onPreRequest and not execute subsequent plugins', async () => {
+      fetchMock.get('https://example3.com/', {
+        status: 200,
+        body: 'Original response',
+      });
+
+      const fetcher = new Fetcher();
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const passThroughPlugin = new PassThroughPlugin();
+      const errorPlugin = new ErrorPlugin();
+      const requestModifierPlugin = new RequestModifierPlugin();
+
+      fetcher.use([passThroughPlugin, errorPlugin, requestModifierPlugin]);
+
+      const request = new Request('https://example3.com/');
+      try {
+        await fetcher.fetch(request);
+        // This part of the code should not be reached
+        expect(true).toBe(false);
+      } catch (error) {
+        // Check that the requestModifierPlugin didn't modify the request
+        expect(request.headers.get('X-Custom-Header')).toBeNull();
+      }
+      expect(spy).toHaveBeenCalledWith(
+        'Error in plugin: Error: This is a dummy error',
+      );
     });
-
-    const fetcher = new Fetcher();
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const passThroughPlugin = new PassThroughPlugin();
-    const errorPlugin = new ErrorPlugin();
-    const requestModifierPlugin = new RequestModifierPlugin();
-
-    fetcher.use([passThroughPlugin, errorPlugin, requestModifierPlugin]);
-
-    const request = new Request('https://example3.com/');
-    try {
-      await fetcher.fetch(request);
-      // This part of the code should not be reached
-      expect(true).toBe(false);
-    } catch (error) {
-      // Check that the requestModifierPlugin didn't modify the request
-      expect(request.headers.get('X-Custom-Header')).toBeNull();
-    }
-    expect(spy).toHaveBeenCalledWith(
-      'Error in plugin: Error: This is a dummy error',
-    );
   });
-});
 
-describe('Error Response Handling in Fetcher', () => {
-  test('should run post-request plugins even if the server returns an error status', async () => {
-    fetchMock.get('https://error-status.com/', {
-      status: 500,
-      body: 'Internal Server Error',
+  describe('Error Response Handling in Fetcher', () => {
+    test('should run post-request plugins even if the server returns an error status', async () => {
+      fetchMock.get('https://error-status.com/', {
+        status: 500,
+        body: 'Internal Server Error',
+      });
+
+      const fetcher = new Fetcher();
+      const responseModifierPlugin = new ResponseModifierPlugin();
+      const spy = jest.spyOn(responseModifierPlugin, 'onPostRequest');
+
+      fetcher.use(responseModifierPlugin);
+
+      const response = await fetcher.fetch('https://error-status.com/');
+
+      // Verify that the plugin's onPostRequest method was called
+      expect(spy).toHaveBeenCalled();
+      expect(response.status).toBe(500);
+      expect(await response.text()).toBe('Internal Server Error');
+
+      spy.mockRestore();
     });
-
-    const fetcher = new Fetcher();
-    const responseModifierPlugin = new ResponseModifierPlugin();
-    const spy = jest.spyOn(responseModifierPlugin, 'onPostRequest');
-
-    fetcher.use(responseModifierPlugin);
-
-    const response = await fetcher.fetch('https://error-status.com/');
-
-    // Verify that the plugin's onPostRequest method was called
-    expect(spy).toHaveBeenCalled();
-    expect(response.status).toBe(500);
-    expect(await response.text()).toBe('Internal Server Error');
-
-    spy.mockRestore();
   });
 });
