@@ -1,5 +1,20 @@
 # @composite-fetcher/with-logging
 
+## 0.2.0
+
+### Minor Changes
+
+- [`1bb9802`](https://github.com/teofanis/composite-fetcher/commit/1bb98027d8df61430a58eb2a0ace21f713dbd0bc) Thanks [@teofanis](https://github.com/teofanis)! - feat(plugin): add with-logging plugin (#33)
+
+### Patch Changes
+
+- [`1bb9802`](https://github.com/teofanis/composite-fetcher/commit/1bb98027d8df61430a58eb2a0ace21f713dbd0bc) Thanks [@teofanis](https://github.com/teofanis)! - chore(release): publish (#39)
+
+- [#39](https://github.com/teofanis/composite-fetcher/pull/39) [`a3cf99b`](https://github.com/teofanis/composite-fetcher/commit/a3cf99b1bcdb11420aecc452089c34229f771f29) Thanks [@teofanis](https://github.com/teofanis)! - ci(changesets): update changesets
+
+- Updated dependencies [[`1bb9802`](https://github.com/teofanis/composite-fetcher/commit/1bb98027d8df61430a58eb2a0ace21f713dbd0bc), [`a3cf99b`](https://github.com/teofanis/composite-fetcher/commit/a3cf99b1bcdb11420aecc452089c34229f771f29), [`1bb9802`](https://github.com/teofanis/composite-fetcher/commit/1bb98027d8df61430a58eb2a0ace21f713dbd0bc)]:
+  - @composite-fetcher/core@0.1.2
+
 ## 0.1.0
 
 ### Minor Changes
