@@ -17,7 +17,7 @@
     "version-packages": "changeset version",
     "create:package": "plop package",
     "create:changeset": "pnpm  dlx changeset-conventional-commits",
-    "pre-release": "turbo build && changeset version && pnpm install && git add pnpm-lock.yaml && git commit -m 'chore: update lockfile' || echo 'Nothing to commit'",
+    "pre-release": "turbo build && changeset version && pnpm install --no-frozen-lockfile && git add pnpm-lock.yaml && git commit -m 'chore: update lockfile' || echo 'Nothing to commit'",
     "release": "pnpm run pre-release && changeset publish",
     "commit": "cz",
     "commit:retry": "cz --retry"
