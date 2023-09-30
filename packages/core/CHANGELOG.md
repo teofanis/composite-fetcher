@@ -1,5 +1,15 @@
 # @composite-fetcher/core
 
+## 0.1.2
+
+### Patch Changes
+
+- [`1bb9802`](https://github.com/teofanis/composite-fetcher/commit/1bb98027d8df61430a58eb2a0ace21f713dbd0bc) Thanks [@teofanis](https://github.com/teofanis)! - chore(release): publish (#39)
+
+- [#39](https://github.com/teofanis/composite-fetcher/pull/39) [`a3cf99b`](https://github.com/teofanis/composite-fetcher/commit/a3cf99b1bcdb11420aecc452089c34229f771f29) Thanks [@teofanis](https://github.com/teofanis)! - ci(changesets): update changesets
+
+- [`1bb9802`](https://github.com/teofanis/composite-fetcher/commit/1bb98027d8df61430a58eb2a0ace21f713dbd0bc) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps-dev): bump @types/node from 20.6.2 to 20.7.0 (#35)
+
 ## 0.1.1
 
 ### Patch Changes
