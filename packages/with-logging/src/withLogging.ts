@@ -32,7 +32,7 @@ export default class withLoggingPlugin {
       ),
     };
 
-    this.logger.info(`Incoming request to: ${context.request.url}`, logContext);
+    this.logger.info(`Outgoing request to: ${context.request.url}`, logContext);
     context.next();
   }
 

@@ -30,7 +30,7 @@ describe('withLoggingPlugin', () => {
     plugin = new withLoggingPlugin(mockLogger);
   });
 
-  it('logs incoming requests correctly', async () => {
+  it('logs outgoing requests correctly', async () => {
     const mockRequestContext = {
       request: {
         url: 'https://test.com/api',
@@ -45,7 +45,7 @@ describe('withLoggingPlugin', () => {
     await plugin.onPreRequest(mockRequestContext as any);
 
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Incoming request to: https://test.com/api',
+      'Outgoing request to: https://test.com/api',
       {
         method: 'GET',
         headers: {},
