@@ -42,7 +42,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm run release
+          publish: pnpm install --no-frozen-lockfile && git add . && pnpm run release
           commit: "ci(changesets): update changesets"
           title: "chore(release): publish"
         env:
