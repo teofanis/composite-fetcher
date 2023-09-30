@@ -220,3 +220,27 @@ describe('Fetcher with early exit from preRequest hook', () => {
     );
   });
 });
+
+describe('Error Response Handling in Fetcher', () => {
+  test('should run post-request plugins even if the server returns an error status', async () => {
+    fetchMock.get('https://error-status.com/', {
+      status: 500,
+      body: 'Internal Server Error',
+    });
+
+    const fetcher = new Fetcher();
+    const responseModifierPlugin = new ResponseModifierPlugin();
+    const spy = jest.spyOn(responseModifierPlugin, 'onPostRequest');
+
+    fetcher.use(responseModifierPlugin);
+
+    const response = await fetcher.fetch('https://error-status.com/');
+
+    // Verify that the plugin's onPostRequest method was called
+    expect(spy).toHaveBeenCalled();
+    expect(response.status).toBe(500);
+    expect(await response.text()).toBe('Internal Server Error');
+
+    spy.mockRestore();
+  });
+});
