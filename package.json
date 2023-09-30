@@ -17,7 +17,7 @@
     "version-packages": "changeset version",
     "create:package": "plop package",
     "create:changeset": "pnpm  dlx changeset-conventional-commits",
-    "pre-release": "turbo build  && changeset version",
+    "pre-release": "turbo build  && changeset version && pnpm install --no-frozen-lockfile && git add .",
     "release": "pnpm run pre-release && changeset publish",
     "commit": "cz",
     "commit:retry": "cz --retry"
