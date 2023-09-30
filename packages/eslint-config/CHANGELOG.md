@@ -1,5 +1,25 @@
 # @composite-fetcher/eslint-config
 
+## 0.1.0
+
+### Minor Changes
+
+- [`192f878`](https://github.com/teofanis/composite-fetcher/commit/192f8783a71d60f4759959196b6e47721624c67b) Thanks [@teofanis](https://github.com/teofanis)! - feat(plugin): add with-logging plugin (#33)
+
+### Patch Changes
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps): regenerate `pnpm-lock.yaml`
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps-dev): bump eslint-import-resolver-typescript (#34)
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps-dev): bump @typescript-eslint/parser from 6.7.2 to 6.7.3 (#38)
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps-dev): bump @next/eslint-plugin-next from 13.4.19 to 13.5.3 (#36)
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - chore(deps): bump eslint-config-next from 13.4.19 to 13.5.3 (#37)
+
+- [#33](https://github.com/teofanis/composite-fetcher/pull/33) [`0177346`](https://github.com/teofanis/composite-fetcher/commit/0177346ea9fe6ffba187335b52abd78544380463) Thanks [@teofanis](https://github.com/teofanis)! - Merge remote-tracking branch 'origin/main' into with-logging
+
 ## 0.0.1
 
 ### Patch Changes
