@@ -1,5 +1,14 @@
 # @composite-fetcher/with-logging
 
+## 0.1.1
+
+### Patch Changes
+
+- [#39](https://github.com/teofanis/composite-fetcher/pull/39) [`a3cf99b`](https://github.com/teofanis/composite-fetcher/commit/a3cf99b1bcdb11420aecc452089c34229f771f29) Thanks [@teofanis](https://github.com/teofanis)! - ci(changesets): update changesets
+
+- Updated dependencies [[`a3cf99b`](https://github.com/teofanis/composite-fetcher/commit/a3cf99b1bcdb11420aecc452089c34229f771f29)]:
+  - @composite-fetcher/core@0.1.2
+
 ## 0.1.0
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/with-logging",
   "description": "A simple logging plugin for composite fetcher",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",
@@ -34,9 +34,9 @@
     "ts-jest": "^29.1.1"
   },
   "dependencies": {
-    "@composite-fetcher/core": "^0.1.1"
+    "@composite-fetcher/core": "^0.1.2"
   },
   "peerDependencies": {
-    "@composite-fetcher/core": "^0.1.1"
+    "@composite-fetcher/core": "^0.1.2"
   }
 }
