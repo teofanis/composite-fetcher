@@ -1,5 +1,14 @@
 # @composite-fetcher/with-logging
 
+## 0.2.1
+
+### Patch Changes
+
+- [`027d64b`](https://github.com/teofanis/composite-fetcher/commit/027d64b1b283f3e9f2dce516cc673af86b578879) Thanks [@teofanis](https://github.com/teofanis)! - fix(build): fix package.json entrypoint for esm modules (#46)
+
+- Updated dependencies [[`027d64b`](https://github.com/teofanis/composite-fetcher/commit/027d64b1b283f3e9f2dce516cc673af86b578879)]:
+  - @composite-fetcher/core@0.1.3
+
 ## 0.2.0
 
 ### Minor Changes
