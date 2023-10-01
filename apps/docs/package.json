@@ -11,7 +11,10 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
   },
   "dependencies": {
+    "@composite-fetcher/core": "workspace:^",
     "@composite-fetcher/utils": "workspace:*",
+    "@composite-fetcher/with-caching": "workspace:^",
+    "@composite-fetcher/with-logging": "workspace:^",
     "next": "^13.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

@@ -7,13 +7,14 @@ import {
 } from '@composite-fetcher/core';
 
 import { ConsoleLogger } from '@/ConsoleLogger';
-import type { Logger } from '@/interfaces';
+import type { Logger, withLoggingOptions } from '@/interfaces';
 
 export default class withLoggingPlugin extends BasePlugin {
   private logger: Logger;
 
-  constructor(logger?: Logger) {
+  constructor(options: withLoggingOptions = {}) {
     super();
+    const { logger } = options;
     // If no logger is provided, use ConsoleLogger as the default logger
     this.logger = logger || new ConsoleLogger();
   }
@@ -35,7 +36,6 @@ export default class withLoggingPlugin extends BasePlugin {
     };
 
     this.logger.info(`Outgoing request to: ${context.request.url}`, logContext);
-    context.next();
   }
 
   async onPostRequest(
@@ -59,6 +59,5 @@ export default class withLoggingPlugin extends BasePlugin {
       `Received response from: ${context.originalRequest.url}`,
       logContext,
     );
-    context.next();
   }
 }

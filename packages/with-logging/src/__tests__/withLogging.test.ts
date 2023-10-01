@@ -27,7 +27,7 @@ describe('withLoggingPlugin', () => {
       emergency: jest.fn(),
     };
 
-    plugin = new withLoggingPlugin(mockLogger);
+    plugin = new withLoggingPlugin({ logger: mockLogger });
   });
 
   it('logs outgoing requests correctly', async () => {
@@ -51,7 +51,6 @@ describe('withLoggingPlugin', () => {
         headers: {},
       },
     );
-    expect(mockRequestContext.next).toHaveBeenCalled();
   });
 
   it('logs received responses correctly', async () => {
@@ -81,7 +80,6 @@ describe('withLoggingPlugin', () => {
         },
       },
     );
-    expect(mockResponseContext.next).toHaveBeenCalled();
   });
 
   it('uses ConsoleLogger by default if no logger is provided', () => {

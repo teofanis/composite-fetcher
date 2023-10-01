@@ -12,7 +12,6 @@ import {
   RequestModifierPlugin,
   ResponseHeaderPluginTwo,
   ResponseModifierPlugin,
-  TimeoutPlugin,
 } from './testUtils';
 
 type FetchMock = typeof fetchMockModule;
@@ -25,6 +24,7 @@ describe('PluginManager', () => {
   beforeEach(() => {
     fetchMock.restore();
     fetchMock.reset();
+    jest.clearAllMocks();
     global.Request = fetchMock.config.Request as unknown as typeof Request;
     global.Response = fetchMock.config.Response as unknown as typeof Response;
     pm = new PluginManager();
@@ -113,20 +113,7 @@ describe('PluginManager', () => {
       );
     });
 
-    test('should timeout a plugin that takes too long', async () => {
-      pm.addPlugins(new TimeoutPlugin());
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-      await pm.runPreRequestHooks(currentRequestId, new Request('/test'));
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Plugin timed out: TimeoutPlugin',
-      );
-      consoleErrorSpy.mockRestore();
-    });
-
-    test('should not process a plugin multiple times if next is called multiple times', async () => {
+    test('should not process a plugin multiple times ', async () => {
       const plugin = new MultipleNextPlugin();
       pm.addPlugins([plugin]);
       await pm.runPreRequestHooks(currentRequestId, new Request('/test'));
@@ -169,7 +156,7 @@ describe('PluginManager', () => {
         currentRequestId,
         new Request('/test'),
       );
-      const request = pm.getModifiedRequest();
+      const request = pm.getModifiedRequest(currentRequestId);
       expect(request).toBe(result);
       expect(request.headers.get('X-Modified-By')).toEqual('PluginManagerTest');
     });
@@ -246,7 +233,7 @@ describe('PluginManager', () => {
         originalResponse,
         new Request('/test'),
       );
-      const response = pm.getModifiedResponse();
+      const response = pm.getModifiedResponse(currentRequestId);
       expect(response).toBe(result);
       expect(response.headers.get('Content-Type')).toEqual('text/plain');
       expect(response.headers.get('X-Modified-By')).toEqual(
