@@ -37,7 +37,7 @@ export default class withCachingPlugin extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void | Response> {
-    if (context.request.headers.has('x-no-cache')) {
+    if (context.request.headers.has('x-fetcher-no-cache')) {
       return;
     }
     const cacheKey = await this.generateCacheKey(context.request);
@@ -55,9 +55,9 @@ export default class withCachingPlugin extends BasePlugin {
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
   ): Promise<void | Response> {
     const { response, originalRequest } = context;
-    if (!originalRequest.headers.has('x-no-cache') && response.ok) {
-      const cacheTTL = originalRequest.headers.has('x-cache-ttl')
-        ? Number(originalRequest.headers.get('x-cache-ttl'))
+    if (!originalRequest.headers.has('x-fetcher-no-cache') && response.ok) {
+      const cacheTTL = originalRequest.headers.has('x-fetcher-cache-ttl')
+        ? Number(originalRequest.headers.get('x-fetcher-cache-ttl'))
         : this.defaultTTL;
       const cacheKey = await this.generateCacheKey(context.originalRequest);
       await this.cacheDriver.set(

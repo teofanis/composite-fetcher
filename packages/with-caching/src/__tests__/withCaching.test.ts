@@ -39,9 +39,9 @@ describe('Integration Tests: withCachingPlugin', () => {
     expect(cached).toBe(true);
   });
 
-  it('should not cache responses when requests are with x-no-cache header', async () => {
+  it('should not cache responses when requests are with x-fetcher-no-cache header', async () => {
     await fetcher.fetch('https://example.com', {
-      headers: { 'x-no-cache': 'true' },
+      headers: { 'x-fetcher-no-cache': 'true' },
     });
     const cacheKey = 'GET-https://example.com/?-';
     const cached = await testCacheDriver.has(cacheKey);
@@ -65,8 +65,8 @@ describe('Integration Tests: withCachingPlugin', () => {
     expect(fetchMock.calls('https://example.com').length).toBe(1);
   });
 
-  it('should bypass cache when x-no-cache header is set in the request', async () => {
-    const headers = { 'x-no-cache': 'true' };
+  it('should bypass cache when x-fetcher-no-cache header is set in the request', async () => {
+    const headers = { 'x-fetcher-no-cache': 'true' };
     await fetcher.fetch('https://example.com', { headers }); // First request
 
     const response = await fetcher.fetch('https://example.com'); // Second request
@@ -75,10 +75,10 @@ describe('Integration Tests: withCachingPlugin', () => {
     expect(fetchMock.calls('https://example.com').length).toBe(2);
   });
 
-  it('should respect x-cache-ttl header for setting expiration', async () => {
+  it('should respect x-fetcher-cache-ttl header for setting expiration', async () => {
     fetchMock.get('https://example.com', 200);
 
-    const headers = { 'x-cache-ttl': '1000' }; // 1 second
+    const headers = { 'x-fetcher-cache-ttl': '1000' }; // 1 second
     await fetcher.fetch('https://example.com', { headers });
 
     // Simulate waiting for the cache to expire
