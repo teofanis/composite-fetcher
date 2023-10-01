@@ -35,7 +35,6 @@ export default class withLoggingPlugin extends BasePlugin {
     };
 
     this.logger.info(`Outgoing request to: ${context.request.url}`, logContext);
-    context.next();
   }
 
   async onPostRequest(
@@ -59,6 +58,5 @@ export default class withLoggingPlugin extends BasePlugin {
       `Received response from: ${context.originalRequest.url}`,
       logContext,
     );
-    context.next();
   }
 }

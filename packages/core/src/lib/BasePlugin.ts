@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-empty-function */
 import {
   type Plugin,
   type PluginHandlerContext,
@@ -5,17 +7,11 @@ import {
 } from '@/interfaces';
 
 export default abstract class BasePlugin implements Plugin {
-  pluginTimeout?: number = 3000;
-
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
-  ): Promise<void | Response> {
-    context.next();
-  }
+  ): Promise<void | Response> {}
 
   async onPostRequest(
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
-  ): Promise<void | Response> {
-    context.next();
-  }
+  ): Promise<void | Response> {}
 }

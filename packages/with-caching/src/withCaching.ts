@@ -38,18 +38,17 @@ export default class withCachingPlugin extends BasePlugin {
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void | Response> {
     if (context.request.headers.has('x-no-cache')) {
-      context.next();
       return;
     }
     const cacheKey = await this.generateCacheKey(context.request);
     if (await this.cacheDriver.has(cacheKey)) {
       const cachedResponse = await this.cacheDriver.get(cacheKey);
+
       if (cachedResponse !== null) {
         // eslint-disable-next-line consistent-return
         return cachedResponse.clone();
       }
     }
-    context.next();
   }
 
   async onPostRequest(
@@ -67,6 +66,5 @@ export default class withCachingPlugin extends BasePlugin {
         this.getCacheTTL(cacheTTL),
       );
     }
-    context.next();
   }
 }

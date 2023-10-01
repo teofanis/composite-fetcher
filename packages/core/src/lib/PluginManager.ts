@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-continue */
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
@@ -15,6 +17,11 @@ export default class PluginManager {
   private requestIdCounter = 0;
 
   private modifiedRequest!: Request;
+
+  private processingContext: Map<
+    number,
+    { request?: Request; response?: Response }
+  > = new Map();
 
   private modifiedResponse!: Response;
 
@@ -63,7 +70,7 @@ export default class PluginManager {
     );
   }
 
-  private processPlugins<T>(
+  private async processPlugins<T>(
     requestId: number,
     hook: PluginLifecycleHook,
     context: T extends PluginLifecycleHook.PRE_REQUEST
@@ -71,59 +78,45 @@ export default class PluginManager {
       : PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
     resolve: (value: Request | Response) => void,
   ) {
-    let index = 0;
-    const isPreRequestContext = this.isPreRequestContext(context);
-    const isPostRequestContext = this.isPostRequestContext(context);
-
-    const next = async () => {
-      if (index >= this.plugins.length) {
-        if (isPreRequestContext) {
-          resolve(context.request);
-        } else if (isPostRequestContext) {
-          resolve(context.response);
-        }
-        return;
-      }
-
+    for (let index = 0; index < this.plugins.length; index++) {
       const plugin = this.plugins[index]!;
 
       if (this.hasBeenProcessed(requestId, plugin, hook)) {
-        index++;
-        next();
-        return;
+        // console.log('Plugin already processed', plugin.constructor.name, hook);
+        continue;
       }
 
-      index++;
+      // console.log(`Running plugin: ${plugin.constructor.name}`, hook);
       this.processedHooks.get(requestId)![hook].add(plugin);
 
-      const timeout = setTimeout(() => {
-        console.error(`Plugin timed out: ${plugin.constructor.name}`);
-        context.next();
-      }, plugin.pluginTimeout || 3000);
+      const method = this.isPreRequestContext(context)
+        ? 'onPreRequest'
+        : 'onPostRequest';
 
-      const method = isPreRequestContext ? 'onPreRequest' : 'onPostRequest';
+      try {
+        const result = await plugin[method]?.(context as any);
 
-      context.next = () => {
-        clearTimeout(timeout);
-        next();
-      };
+        if (result instanceof Response) {
+          resolve(result);
+          return;
+        }
 
-      const result = await plugin[method]?.(context as any).catch((error) => {
+        if (this.isPreRequestContext(context)) {
+          context.request = this.processingContext.get(requestId)!.request!;
+        } else if (this.isPostRequestContext(context)) {
+          context.response = this.processingContext.get(requestId)!.response!;
+        }
+      } catch (error) {
         console.error(`Error in plugin: ${error}`);
-        clearTimeout(timeout);
-        context.next();
-      });
-
-      if (result instanceof Response) {
-        clearTimeout(timeout);
-        resolve(result);
-        return;
+        continue;
       }
+    }
 
-      context.next();
-    };
-
-    next();
+    if (this.isPreRequestContext(context)) {
+      resolve(context.request);
+    } else if (this.isPostRequestContext(context)) {
+      resolve(context.response);
+    }
   }
 
   runPreRequestHooks(
@@ -131,13 +124,14 @@ export default class PluginManager {
     request: Request,
   ): Promise<Request | Response> {
     return new Promise((resolve) => {
-      this.modifiedRequest = request.clone();
-      const context = {
-        request: this.modifiedRequest,
+      const modifiedRequest = request.clone();
+      this.processingContext.set(requestId, { request: modifiedRequest });
+
+      const context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST> = {
+        request: modifiedRequest,
         originalRequest: request,
-        next: () => {},
         pluginManager: this,
-      } as PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>;
+      };
 
       this.processPlugins<PluginLifecycleHook.PRE_REQUEST>(
         requestId,
@@ -154,13 +148,18 @@ export default class PluginManager {
     originalRequest: Request,
   ): Promise<Response> {
     return new Promise((resolve) => {
-      this.modifiedResponse = response.clone();
-      const context = {
-        response: this.modifiedResponse,
+      const modifiedResponse = response.clone();
+      if (!this.processingContext.has(requestId)) {
+        this.processingContext.set(requestId, {});
+      }
+
+      this.processingContext.get(requestId)!.response = modifiedResponse;
+
+      const context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST> = {
+        response: modifiedResponse,
         originalRequest,
-        next: () => {},
         pluginManager: this,
-      } as PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>;
+      };
 
       this.processPlugins<PluginLifecycleHook.POST_REQUEST>(
         requestId,
@@ -171,12 +170,14 @@ export default class PluginManager {
     });
   }
 
-  getModifiedRequest(): Request {
-    return this.modifiedRequest;
+  getModifiedRequest(requestId: number): Request {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    return this.processingContext.get(requestId)?.request!;
   }
 
-  getModifiedResponse(): Response {
-    return this.modifiedResponse;
+  getModifiedResponse(requestId: number): Response {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    return this.processingContext.get(requestId)?.response!;
   }
 
   getPlugins(): Plugin[] {

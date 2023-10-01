@@ -60,9 +60,18 @@ importers:
 
   apps/docs:
     dependencies:
+      '@composite-fetcher/core':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@composite-fetcher/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@composite-fetcher/with-caching':
+        specifier: workspace:^
+        version: link:../../packages/with-caching
+      '@composite-fetcher/with-logging':
+        specifier: workspace:^
+        version: link:../../packages/with-logging
       next:
         specifier: ^13.4.1
         version: 13.4.19(react-dom@18.2.0)(react@18.2.0)

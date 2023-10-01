@@ -1,3 +1,7 @@
+/* eslint-disable no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
+/* eslint-disable no-promise-executor-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-classes-per-file */
@@ -8,17 +12,15 @@ export class DummyPlugin extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void> {
-    const { next, request } = context;
+    const { request } = context;
     request.headers.set('X-Dummy-Header', 'test-request-header');
-    next();
   }
 
   async onPostRequest(
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
   ): Promise<void> {
-    const { next, response } = context;
+    const { response } = context;
     response.headers.set('X-Dummy-Header', 'test-response-header');
-    next();
   }
 }
 
@@ -36,25 +38,15 @@ export class LogPlugin extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void> {
-    const { next, request } = context;
+    const { request } = context;
     console.log('request to', request.url);
-    next();
   }
 
   async onPostRequest(
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
   ): Promise<Response | void> {
-    const { next, response } = context;
+    const { response } = context;
     console.log('response from', response.url);
-    next();
-  }
-}
-export class TimeoutPlugin extends BasePlugin {
-  pluginTimeout = 1000;
-
-  async onPreRequest(): Promise<void> {
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, 4000));
   }
 }
 
@@ -62,9 +54,8 @@ export class RequestModifierPlugin extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void> {
-    const { request, next } = context;
+    const { request } = context;
     request.headers.set('X-Custom-Header', 'test');
-    next();
   }
 }
 export class MultipleNextPlugin extends BasePlugin {
@@ -73,10 +64,7 @@ export class MultipleNextPlugin extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void> {
-    const { next } = context;
     this.callCount++;
-    next();
-    next();
   }
 }
 export class CountingPlugin extends BasePlugin {
@@ -86,7 +74,6 @@ export class CountingPlugin extends BasePlugin {
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void> {
     this.callCount++;
-    context.next();
   }
 }
 
@@ -104,7 +91,7 @@ export class RequestHeaderPluginTwo extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
   ): Promise<void> {
-    const { request, next } = context;
+    const { request } = context;
     const currentHeaderValue = request.headers.get(this.headerName) || '';
     request.headers.set(
       this.headerName,
@@ -112,7 +99,6 @@ export class RequestHeaderPluginTwo extends BasePlugin {
         ? `${currentHeaderValue},${this.headerValue}`
         : this.headerValue,
     );
-    next();
   }
 }
 export class ResponseModifierPlugin extends BasePlugin {
@@ -120,7 +106,6 @@ export class ResponseModifierPlugin extends BasePlugin {
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
   ): Promise<void> {
     context.response.headers.set('X-Custom-Header', 'test');
-    context.next();
   }
 }
 
@@ -146,7 +131,6 @@ export class ResponseHeaderPluginTwo extends BasePlugin {
         ? `${currentHeaderValue},${this.headerValue}`
         : this.headerValue,
     );
-    context.next();
   }
 }
 
@@ -168,13 +152,9 @@ export class EarlyResponsePostRequestPlugin extends BasePlugin {
 export class PassThroughPlugin extends BasePlugin {
   async onPreRequest(
     context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
-  ): Promise<void> {
-    context.next();
-  }
+  ): Promise<void> {}
 
   async onPostRequest(
     context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
-  ): Promise<void> {
-    context.next();
-  }
+  ): Promise<void> {}
 }

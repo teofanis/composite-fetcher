@@ -12,7 +12,6 @@ import {
   RequestModifierPlugin,
   ResponseHeaderPluginTwo,
   ResponseModifierPlugin,
-  TimeoutPlugin,
 } from './testUtils';
 
 type FetchMock = typeof import('fetch-mock');
@@ -56,9 +55,9 @@ describe('Fetcher', () => {
       const request = new Request('https://example.com/');
       const response = await fetcher.fetch(request);
       // @ts-expect-error - private property
-      const modifiedRequest = fetcher.pluginManager.getModifiedRequest();
+      const modifiedRequest = fetcher.pluginManager.getModifiedRequest(0);
       // @ts-expect-error - private property
-      const modifiedResponse = fetcher.pluginManager.getModifiedResponse();
+      const modifiedResponse = fetcher.pluginManager.getModifiedResponse(0);
       expect(modifiedRequest.headers.get('X-Dummy-Header')).toEqual(
         'test-request-header',
       );
@@ -89,9 +88,9 @@ describe('Fetcher', () => {
       const response = await fetcher.fetch(request);
       expect(response.status).toEqual(200);
       // @ts-expect-error - private property
-      const modifiedRequest = fetcher.pluginManager.getModifiedRequest();
+      const modifiedRequest = fetcher.pluginManager.getModifiedRequest(0);
       // @ts-expect-error - private property
-      const modifiedResponse = fetcher.pluginManager.getModifiedResponse();
+      const modifiedResponse = fetcher.pluginManager.getModifiedResponse(0);
 
       const expectedOrder = {
         request: ['test-request-header', 'test1', 'test2', 'test4'],
@@ -124,18 +123,6 @@ describe('Fetcher', () => {
       expect(spy).toHaveBeenCalledWith(
         'Error in plugin: Error: This is a dummy error',
       );
-      spy.mockRestore();
-    });
-
-    test('should handle when a plugin does not call next', async () => {
-      const fetcher = new Fetcher();
-      const plugin = new TimeoutPlugin();
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      fetcher.use(plugin);
-      const request = new Request('https://example.com/');
-      const response = await fetcher.fetch(request);
-      expect(response.status).toEqual(200);
-      expect(spy).toHaveBeenCalledWith('Plugin timed out: TimeoutPlugin');
       spy.mockRestore();
     });
   });
