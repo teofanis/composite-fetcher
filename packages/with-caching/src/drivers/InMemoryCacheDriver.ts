@@ -44,6 +44,7 @@ export default class InMemoryCacheDriver implements CacheDriver {
   private async serializeResponse(response: Response) {
     const body = await response.arrayBuffer();
     return {
+      url: response.url,
       status: response.status,
       statusText: response.statusText,
       headers: [...response.headers.entries()],

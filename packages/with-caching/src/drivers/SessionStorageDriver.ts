@@ -7,6 +7,7 @@ export default class SessionStorageDriver implements CacheDriver {
     expirationDate?: Date,
   ): Promise<void> {
     const item = {
+      url: response.url,
       value: await response.clone().text(),
       headers: Array.from(response.headers.entries()),
       status: response.status,
