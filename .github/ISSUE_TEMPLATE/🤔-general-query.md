@@ -1,5 +1,5 @@
 ---
-name: General Query
+name: "\U0001F914 General Query"
 about: Ask a question or need clarification
 title: ''
 labels: question
