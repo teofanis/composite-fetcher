@@ -20,7 +20,9 @@ describe('Integration Tests: withCachingPlugin', () => {
     global.Headers = fetchMock.config.Headers as unknown as typeof Headers;
     testCacheDriver = new InMemoryCacheDriver();
     fetcher = new Fetcher();
-    const cachingPlugin = new withCachingPlugin(testCacheDriver);
+    const cachingPlugin = new withCachingPlugin({
+      cacheDriver: testCacheDriver,
+    });
     fetcher.use(cachingPlugin);
     fetchMock.get('*', {
       status: 200,

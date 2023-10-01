@@ -27,7 +27,7 @@ describe('withLoggingPlugin', () => {
       emergency: jest.fn(),
     };
 
-    plugin = new withLoggingPlugin(mockLogger);
+    plugin = new withLoggingPlugin({ logger: mockLogger });
   });
 
   it('logs outgoing requests correctly', async () => {

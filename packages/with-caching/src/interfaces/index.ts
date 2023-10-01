@@ -5,3 +5,7 @@ export interface CacheDriver {
   delete: (key: string) => Promise<void>;
   clear: () => Promise<void>;
 }
+export interface withCachingOptions {
+  cacheDriver?: CacheDriver;
+  defaultTTL?: number;
+}

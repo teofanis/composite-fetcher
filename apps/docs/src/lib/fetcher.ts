@@ -4,7 +4,7 @@ import { withLogging } from '@composite-fetcher/with-logging'
 
 const fetcher = new Fetcher()
 fetcher.use(new withLogging())
-fetcher.use(new withCaching(new SessionStorageDriver()))
+fetcher.use(new withCaching({ cacheDriver: new SessionStorageDriver()}))
 
 export default fetcher
 

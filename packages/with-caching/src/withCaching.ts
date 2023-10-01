@@ -3,7 +3,7 @@ import {
   PluginLifecycleHook,
   type PluginHandlerContext,
 } from '@composite-fetcher/core';
-import type { CacheDriver } from '@/interfaces';
+import type { CacheDriver, withCachingOptions } from '@/interfaces';
 import { InMemoryCacheDriver } from '@/drivers';
 
 export default class withCachingPlugin extends BasePlugin {
@@ -11,8 +11,9 @@ export default class withCachingPlugin extends BasePlugin {
 
   private readonly defaultTTL: number = 10 * 60 * 1000; // 10 minutes
 
-  constructor(cacheDriver?: CacheDriver, defaultTTL?: number) {
+  constructor(options: withCachingOptions = {}) {
     super();
+    const { cacheDriver, defaultTTL } = options;
     this.cacheDriver = cacheDriver || new InMemoryCacheDriver();
     if (defaultTTL) {
       this.defaultTTL = defaultTTL;

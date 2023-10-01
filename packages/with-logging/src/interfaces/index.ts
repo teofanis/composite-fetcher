@@ -9,3 +9,6 @@ export interface Logger {
   alert(message: string, ...optionalParams: any[]): void;
   emergency(message: string, ...optionalParams: any[]): void;
 }
+export interface withLoggingOptions {
+  logger?: Logger;
+}
