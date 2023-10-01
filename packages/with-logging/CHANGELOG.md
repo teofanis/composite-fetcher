@@ -1,5 +1,16 @@
 # @composite-fetcher/with-logging
 
+## 0.3.1
+
+### Patch Changes
+
+- [#51](https://github.com/teofanis/composite-fetcher/pull/51) [`98ef091`](https://github.com/teofanis/composite-fetcher/commit/98ef091783eb8c83309b08f2804c30c4e9216684) Thanks [@teofanis](https://github.com/teofanis)! - refactor(plugins): use objects to pass options to plugins
+
+- [#51](https://github.com/teofanis/composite-fetcher/pull/51) [`98ef091`](https://github.com/teofanis/composite-fetcher/commit/98ef091783eb8c83309b08f2804c30c4e9216684) Thanks [@teofanis](https://github.com/teofanis)! - refactor(core): remove timeout logic and next
+
+- Updated dependencies [[`98ef091`](https://github.com/teofanis/composite-fetcher/commit/98ef091783eb8c83309b08f2804c30c4e9216684), [`98ef091`](https://github.com/teofanis/composite-fetcher/commit/98ef091783eb8c83309b08f2804c30c4e9216684)]:
+  - @composite-fetcher/core@0.1.5
+
 ## 0.3.0
 
 ### Minor Changes

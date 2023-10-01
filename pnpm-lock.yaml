@@ -262,7 +262,7 @@ importers:
   packages/with-logging:
     dependencies:
       '@composite-fetcher/core':
-        specifier: ^0.1.4
+        specifier: ^0.1.5
         version: link:../core
     devDependencies:
       '@composite-fetcher/eslint-config':
