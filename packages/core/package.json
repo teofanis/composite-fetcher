@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/core",
   "description": "Fetcher core",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",
