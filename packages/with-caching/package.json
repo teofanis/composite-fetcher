@@ -18,6 +18,29 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "keywords": [
+    "caching",
+    "http-cache",
+    "fetch-cache",
+    "request-cache",
+    "response-cache",
+    "storage",
+    "session-storage",
+    "local-storage",
+    "memory-cache",
+    "ttl",
+    "cache-control",
+    "http-caching",
+    "plugin",
+    "fetch-plugin",
+    "api-cache",
+    "web-cache",
+    "composite-fetcher",
+    "plugin",
+    "fetch-plugin",
+    "with-caching",
+    "withCaching"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "pnpm run build -- --watch",

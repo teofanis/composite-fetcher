@@ -1,0 +1,41 @@
+# WithLogging Plugin
+
+The withLogging plugin serves as a utility designed to enhance the visibility and traceability of your fetch operations. By offering detailed logging for outgoing requests and their corresponding responses, it aids developers in monitoring, debugging, and understanding the HTTP traffic in their applications.
+
+## How it Works
+Upon integrating the withLogging plugin with the Fetcher, it logs essential details about every outgoing request before it's dispatched and the corresponding response after it's received.
+
+## Lifecycle:
+- onPreRequest: Before dispatching a request, it logs key details such as the request method, headers, and destination URL.
+- onPostRequest: After a response is received, it logs vital details like the response's status, status text, headers, and the original request URL.
+
+## Plugin Options
+
+The `withLogging` plugin can be configured using the following options:
+
+- `logger`: An optional logger instance that conforms to the Logger interface. If none is provided, the plugin defaults to using the built-in [ConsoleLogger](https://github.com/teofanis/composite-fetcher/blob/db21a060522b21c693f3d2c0fa0ea2453f0e052d/packages/with-logging/src/ConsoleLogger.ts#L6), which logs messages directly to the console.
+
+## Usage:
+
+```js copy
+import { Fetcher } from '@composite-fetcher/core';
+import { withLogging } from '@composite-fetcher/with-logging';
+import { ConsoleLogger } from 'path-to-your-custom-logger';
+
+const fetcher = new Fetcher();
+
+const loggingOptions = {
+  logger: new ConsoleLogger(), // optional - defaults to ConsoleLogger
+};
+const loggingPlugin = new withLogging(loggingOptions);
+fetcher.use([loggingPlugin]);
+
+fetcher.fetch('https://example.com/api/...')
+  .then(response => { /* handle response */ })
+  .catch(error => { /* handle error */ });
+
+```
+
+## Custom Logger
+
+You can create your own logger by implementing the [`Logger`](https://github.com/teofanis/composite-fetcher/blob/db21a060522b21c693f3d2c0fa0ea2453f0e052d/packages/with-logging/src/interfaces/index.ts#L2) interface.

@@ -1,0 +1,174 @@
+import { Callout } from 'nextra/components'
+
+<Callout type="info" emoji="ℹ️">
+  Thank you for taking the time to read this documentation. For any questions or requests, please open an issue on the repository [here](https://github.com/teofanis/composite-fetcher/issues/new/choose).
+</Callout>
+
+# Composite-Fetcher Documentation
+
+Welcome to the official documentation for Composite-Fetcher!
+
+## What is Composite-Fetcher?
+
+Composite-Fetcher is a dynamic and modular fetcher designed to simplify and streamline the process of making network requests. Instead of writing repetitive and error-prone fetch requests, Composite-Fetcher provides a structured and extensible platform, allowing developers to effortlessly manage, extend, and deduplicate their requests.
+
+## Why does Composite-Fetcher exist?
+
+During my journey as a developer, while working on various projects, I often encountered the need to wrap around requests for deduplication, error handling, and other concerns. This repetitive task sparked the idea for a tool that could handle these for me. In my current role, I had the opportunity to design a fetcher based on similar concepts. The results were impressive, and it significantly streamlined our development process. Recognizing its potential, I decided to modularize the concept and thus, Composite-Fetcher was born. My hope is that this repository can serve as a robust tool for developers everywhere, offering the flexibility to extend and adapt it according to their needs.
+
+## Composite-Fetcher Basics
+
+Composite-Fetcher is essentially a wrapper around the native fetch API. It retains the familiar fetch API structure, but enriches it with added functionalities, mainly via plugins.
+
+### Basic Usage
+To kick things off, let's take a look at a straightforward use-case:
+
+```js copy
+import { Fetcher } from '@composite-fetcher/core';
+
+const fetcher = new Fetcher();
+fetcher.fetch('https://example.com/api/...')
+  .then(response => { /* handle response */ })
+  .catch(error => { /* handle error */ });
+
+``` 
+
+Here, you're simply using the fetcher instance as you would with the native fetch function.
+
+### Enhancing with Plugins
+
+One of the main attractions of Composite-Fetcher is the ability to apply plugins, which are essentially middlewares providing additional functionalities.
+
+Plugin Usage
+Let's enhance our basic fetcher with some plugins:
+
+```js copy
+import { Fetcher } from '@composite-fetcher/core';
+import { withCaching, SessionStorageDriver } from '@composite-fetcher/with-caching';
+import { withLogging } from '@composite-fetcher/with-logging';
+
+const fetcher = new Fetcher();
+fetcher.use([
+  new withLogging(),
+  new withCaching({
+   cacheDriver: new SessionStorageDriver()
+  })
+]);
+
+fetcher.fetch('https://example.com/api/...')
+  .then(response => { /* handle response */ })
+  .catch(error => { /* handle error */ });
+
+``` 
+
+In the above example, we've applied both logging and caching plugins. It's important to remember that the sequence of the plugins matters. They will execute in the order they're added.
+
+### How Do Plugins Work?
+
+Each plugin might consist of hooks that are triggered at different stages of the request lifecycle. The primary stages are:
+
+1. Pre-Request: Before the actual request is made.
+2. Actual Request: Where the fetch action occurs.
+3. Post-Request: After receiving the response.
+
+A plugin can provide:
+
+- onPreRequestHook: Triggered during the pre-request phase.
+- onPostRequestHook: Triggered during the post-request phase.
+- Or both.
+
+### Lifecycle Example
+Consider the earlier code where we added the logging and caching plugins. Here's the execution sequence:
+
+1. Logging pre-request hook
+2. Caching pre-request hook
+3. Actual request
+4. Logging post-request hook
+5. Caching post-request hook
+
+### Plugin Hook Context
+
+Hooks have access to a certain context:
+
+#### Pre-Request Hook
+
+ - request: Current state of the Request object.
+ - originalRequest: Initial unmodified Request.
+ - pluginManager: Manager handling the plugins.
+
+#### Post-Request Hook
+
+ - response: Response object.
+ - originalRequest: Initial unmodified Request.
+ - pluginManager: Manager handling the plugins.
+
+It's important to note that plugins can directly modify the request or response object without returning it. The changes will still be reflected. Owing to the internal lifecycle management by the pluginManager, hooks are expected to either return void (no value) or a Response object if they intend to exit the lifecycle early.
+
+
+With these fundamentals, you're now equipped to make the most of Composite-Fetcher. Delve into the sections ahead to understand more about individual plugins and their options.
+
+## Extending Composite-Fetcher / Creating Plugins
+
+The Plugin Structure
+At the heart of creating a custom plugin lies the foundational structure you'll be working with. Here's the recommended way to define a plugin:
+
+Create a class that either extends the BasePlugin abstract class:
+
+```js copy copy 
+import { BasePlugin, PluginHandlerContext, PluginLifecycleHook } from '@composite-fetcher/core';
+
+export default class CustomPlugin extends BasePlugin {
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
+  ): Promise<void | Response> {
+    // Your pre-request logic here
+  }
+
+  async onPostRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.POST_REQUEST>,
+  ): Promise<void | Response> {
+    // Your post-request logic here
+  }
+}
+
+```
+
+### Writing Your Logic 
+
+Now that the foundational structure is set up, let's add logic to our custom plugin. Consider an example where you want to add a custom header to each request:
+```js copy
+export default class CustomHeaderPlugin extends BasePlugin {
+  async onPreRequest(
+    context: PluginHandlerContext<PluginLifecycleHook.PRE_REQUEST>,
+  ): Promise<void | Response> {
+    context.request.headers.append('X-Custom-Header', 'CustomValue');
+  }
+}
+``` 
+In this example, the CustomHeaderPlugin appends a custom header before each request is made. The context.request provides access to the current state of the request, allowing you to modify it as needed.
+
+### Using Your Custom Plugin
+Once your custom plugin is ready, integrating it with the Fetcher is a breeze:
+
+```js copy
+import { Fetcher } from '@composite-fetcher/core';
+import CustomHeaderPlugin from './path-to-your-custom-plugin';
+
+const fetcher = new Fetcher();
+fetcher.use([new CustomHeaderPlugin()]);
+
+fetcher.fetch('https://example.com/api/...')
+  .then(response => { /* handle response */ })
+  .catch(error => { /* handle error */ });
+
+```
+{/* 
+## Explore More
+
+Ready to dive deeper? Explore the submenus to learn about the plugins, their functionalities, options, and how to make the most out of Composite-Fetcher:
+
+- [Plugin Documentation](./plugins)
+- [Configuration Options](./configuration)
+- ... [Add links to other sub-sections] */}
+
+Thank you for using Composite-Fetcher !
