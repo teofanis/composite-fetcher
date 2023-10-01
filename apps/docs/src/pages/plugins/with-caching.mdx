@@ -1,0 +1,45 @@
+# WithCaching Plugin
+The `withCaching` plugin is designed to enhance the efficiency of your fetch operations by leveraging caching mechanisms. By caching responses, it significantly reduces the number of redundant requests, making your applications faster and more responsive.
+
+## How it Works
+The withCaching plugin checks the cache before dispatching a request. 
+If a cached response for the request exists and hasn't expired, it returns the cached response, skipping the network request. 
+Otherwise, it will cache the response after the call.
+
+## Lifecycle:
+- onPreRequest: Before a request is dispatched, it checks the cache for a corresponding response.
+- onPostRequest: After receiving a response, it caches the response for future use.
+
+## Plugin Options
+
+The `withCaching` plugin offers several options to customize its behavior:
+
+- `cacheDriver`: Specifies the caching mechanism to use. E.g., SessionStorageDriver, or a custom driver - InMemoryDriver is used by default.
+- `defaultTTL`: Determines how long a response should be stored in cache (time in milliseconds). Default is 10 minutes.
+
+You can use the following custom headers for more granual control per request. 
+- `x-fetcher-no-cache`: Specifies whether to use the cache or not. If present cache will be skipped.
+- `x-fetcher-cache-ttl`: Specifies the TTL for the cached response (time in milliseconds). 
+
+## Usage:
+
+```js copy
+import { Fetcher } from '@composite-fetcher/core';
+import { withCaching, SessionStorageDriver } from '@composite-fetcher/with-caching';
+
+const fetcher = new Fetcher();
+
+const cachingPlugin = new withCaching({
+  cacheDriver: new SessionStorageDriver(),
+  cacheExpiration: 600000,  // cache for 10 minutes
+});
+fetcher.use([cachingPlugin]);
+
+fetcher.fetch('https://example.com/api/...')
+  .then(response => { /* handle response */ })
+  .catch(error => { /* handle error */ });
+```
+
+## Custom Cache Driver
+
+You can create your own cache driver by implementing the [`CacheDriver`](https://github.com/teofanis/composite-fetcher/blob/db21a060522b21c693f3d2c0fa0ea2453f0e052d/packages/with-caching/src/interfaces/index.ts#L1) interface.

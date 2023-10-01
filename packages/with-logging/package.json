@@ -18,6 +18,28 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "keywords": [
+    "logging",
+    "logger",
+    "http-logger",
+    "fetch-logger",
+    "request-logger",
+    "response-logger",
+    "debug",
+    "info",
+    "warn",
+    "error",
+    "network-log",
+    "http-log",
+    "plugin",
+    "fetch-plugin",
+    "api-logger",
+    "web-logger",
+    "composite-fetcher",
+    "plugin",
+    "withLogging",
+    "with-logging"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "pnpm run build -- --watch",
