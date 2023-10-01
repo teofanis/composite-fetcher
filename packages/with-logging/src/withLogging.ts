@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type {
-  PluginHandlerContext,
-  PluginLifecycleHook,
+import {
+  BasePlugin,
+  type PluginHandlerContext,
+  type PluginLifecycleHook,
 } from '@composite-fetcher/core';
 
 import { ConsoleLogger } from '@/ConsoleLogger';
 import type { Logger } from '@/interfaces';
 
-export default class withLoggingPlugin {
+export default class withLoggingPlugin extends BasePlugin {
   private logger: Logger;
 
   constructor(logger?: Logger) {
+    super();
     // If no logger is provided, use ConsoleLogger as the default logger
     this.logger = logger || new ConsoleLogger();
   }

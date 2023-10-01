@@ -4,9 +4,13 @@
       "name": "Fetcher Core",
       "path": "packages/core"
     },
-      {
+    {
       "name": "withLogging Plugin",
       "path": "packages/with-logging"
+    },
+    {
+      "name": "withCaching Plugin",
+      "path": "packages/with-caching"
     },
     {
       "name": "Docs",
