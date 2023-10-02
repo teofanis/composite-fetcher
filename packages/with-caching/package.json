@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/with-caching",
   "description": "withCaching is a simple fetcher core plugin to manage request caching with different drivers",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",
@@ -18,6 +18,29 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "keywords": [
+    "caching",
+    "http-cache",
+    "fetch-cache",
+    "request-cache",
+    "response-cache",
+    "storage",
+    "session-storage",
+    "local-storage",
+    "memory-cache",
+    "ttl",
+    "cache-control",
+    "http-caching",
+    "plugin",
+    "fetch-plugin",
+    "api-cache",
+    "web-cache",
+    "composite-fetcher",
+    "plugin",
+    "fetch-plugin",
+    "with-caching",
+    "withCaching"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "pnpm run build -- --watch",

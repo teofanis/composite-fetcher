@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/core",
   "description": "Fetcher core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",
@@ -18,6 +18,25 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "keywords": [
+    "fetch",
+    "http",
+    "request",
+    "response",
+    "wrapper",
+    "api",
+    "ajax",
+    "http-client",
+    "core",
+    "fetcher",
+    "plugin",
+    "extensible",
+    "networking",
+    "web",
+    "browser",
+    "nodejs",
+    "composite-fetcher"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "npm run build -- --watch",

@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/with-logging",
   "description": "A simple logging plugin for composite fetcher",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",
@@ -18,6 +18,28 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "keywords": [
+    "logging",
+    "logger",
+    "http-logger",
+    "fetch-logger",
+    "request-logger",
+    "response-logger",
+    "debug",
+    "info",
+    "warn",
+    "error",
+    "network-log",
+    "http-log",
+    "plugin",
+    "fetch-plugin",
+    "api-logger",
+    "web-logger",
+    "composite-fetcher",
+    "plugin",
+    "withLogging",
+    "with-logging"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "pnpm run build -- --watch",
@@ -34,9 +56,9 @@
     "ts-jest": "^29.1.1"
   },
   "dependencies": {
-    "@composite-fetcher/core": "^0.1.5"
+    "@composite-fetcher/core": "^0.1.6"
   },
   "peerDependencies": {
-    "@composite-fetcher/core": "^0.1.5"
+    "@composite-fetcher/core": "^0.1.6"
   }
 }
