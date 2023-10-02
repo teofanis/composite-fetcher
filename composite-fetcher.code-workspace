@@ -71,7 +71,8 @@
       "dbaeumer",
       "esbenp",
       "Gruntfuggly",
-      "Orta"
+      "Orta",
+      "webp"
     ],
     "jest.disabledWorkspaceFolders": [
       "Root",
