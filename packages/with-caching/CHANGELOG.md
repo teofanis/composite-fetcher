@@ -1,5 +1,20 @@
 # @composite-fetcher/with-caching
 
+## 0.2.0
+
+### Minor Changes
+
+- [#55](https://github.com/teofanis/composite-fetcher/pull/55) [`c0144c1`](https://github.com/teofanis/composite-fetcher/commit/c0144c1ba2cf3a7179435de67be51b3c5e176bd9) Thanks [@teofanis](https://github.com/teofanis)! - feat(docs): add documentation (#53)
+
+### Patch Changes
+
+- [#55](https://github.com/teofanis/composite-fetcher/pull/55) [`c0144c1`](https://github.com/teofanis/composite-fetcher/commit/c0144c1ba2cf3a7179435de67be51b3c5e176bd9) Thanks [@teofanis](https://github.com/teofanis)! - Merge remote-tracking branch 'origin/main' into update-docs-metadata
+
+- [#55](https://github.com/teofanis/composite-fetcher/pull/55) [`c0144c1`](https://github.com/teofanis/composite-fetcher/commit/c0144c1ba2cf3a7179435de67be51b3c5e176bd9) Thanks [@teofanis](https://github.com/teofanis)! - chore(release): publish (#54)
+
+- Updated dependencies [[`c0144c1`](https://github.com/teofanis/composite-fetcher/commit/c0144c1ba2cf3a7179435de67be51b3c5e176bd9), [`c0144c1`](https://github.com/teofanis/composite-fetcher/commit/c0144c1ba2cf3a7179435de67be51b3c5e176bd9), [`c0144c1`](https://github.com/teofanis/composite-fetcher/commit/c0144c1ba2cf3a7179435de67be51b3c5e176bd9)]:
+  - @composite-fetcher/core@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes
