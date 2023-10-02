@@ -27,7 +27,7 @@
     "@changesets/cli": "^2.22.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
-    "@commitlint/cz-commitlint": "^17.7.1",
+    "@commitlint/cz-commitlint": "^17.7.2",
     "@composite-fetcher/eslint-config": "workspace:*",
     "changeset-conventional-commits": "^0.2.1",
     "commitizen": "^4.3.0",
