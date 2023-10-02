@@ -1,10 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [
+    "**/.env.*",
     "**/.env.*local"
   ],
   "pipeline": {
     "build": {
+      "env": [
+        "NEXT_PUBLIC_HOST_URL"
+      ],
       "outputs": [
         "dist/**",
         ".next/**",
