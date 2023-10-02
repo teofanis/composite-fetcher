@@ -14,7 +14,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.5.3",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
-    "@typescript-eslint/parser": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.4",
     "es-abstract": "^1.22.2",
     "eslint": "^8.49.0",
     "eslint-config-airbnb": "^19.0.4",
