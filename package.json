@@ -29,7 +29,7 @@
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/cz-commitlint": "^17.7.1",
     "@composite-fetcher/eslint-config": "workspace:*",
-    "changeset-conventional-commits": "^0.2.1",
+    "changeset-conventional-commits": "^0.2.2",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.49.0",

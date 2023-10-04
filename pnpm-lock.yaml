@@ -31,8 +31,8 @@ importers:
         specifier: workspace:*
         version: link:packages/eslint-config
       changeset-conventional-commits:
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.2.2
+        version: 0.2.2
       commitizen:
         specifier: ^4.3.0
         version: 4.3.0
@@ -2970,8 +2970,8 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /changeset-conventional-commits@0.2.1:
-    resolution: {integrity: sha512-rSS+QFuQXlOw1gLI4N/fi90VjPduBV129VLj/c+w9d99megg9pJcWDFEXIMORTKeZXJy6qVH3IMrVJ15XopjBA==}
+  /changeset-conventional-commits@0.2.2:
+    resolution: {integrity: sha512-ahU1ufHG3TLCNZcOEi0kcqEidyBUUTktuRZBWWCxzwNTlMpEOQRGbFVTJ0OOeEssJz9vJdInHZFyBl+hh7b6nw==}
     hasBin: true
     dependencies:
       '@changesets/read': 0.5.9
