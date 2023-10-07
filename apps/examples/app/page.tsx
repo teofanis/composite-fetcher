@@ -18,7 +18,11 @@ export default function Home() {
 
   const handleFailureClick = () => {
     fetcher
-      .fetch('/api/fail') // This is a failure endpoint for demonstration
+      .fetch('/api/fail', {
+        headers: {
+          'x-fetcher-retry-times': '6',
+        },
+      }) // This is a failure endpoint for demonstration
       .then((res: { json: () => any }) => res.json())
       .then(console.log)
       .catch(console.error);

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
 /* eslint-disable no-return-await */
 /* eslint-disable consistent-return */
@@ -6,7 +7,9 @@ import {
   type PluginHandlerContext,
   type PluginLifecycleHook,
 } from '@composite-fetcher/core';
+import fetch from 'isomorphic-fetch';
 
+type ResponseType = Awaited<ReturnType<typeof fetch>>;
 export default class withRetriesPlugin extends BasePlugin {
   private defaultMaxRetries: number;
 
@@ -15,7 +18,7 @@ export default class withRetriesPlugin extends BasePlugin {
     this.defaultMaxRetries = defaultMaxRetries;
   }
 
-  private async retryOperation<T>(
+  private async retryOperation<T extends ResponseType>(
     promiseFn: () => Promise<T>,
     onSuccess: (value: T) => void,
     onFailure: (error: unknown) => void,
@@ -24,6 +27,9 @@ export default class withRetriesPlugin extends BasePlugin {
   ): Promise<void> {
     try {
       const result = await promiseFn();
+      if (result instanceof Response && !result.ok) {
+        throw new Error(`HTTP error: ${result.status}`);
+      }
       return onSuccess(result);
     } catch (err) {
       if (attempt < retries - 1) {

@@ -4,6 +4,6 @@ import { withRetries } from '@composite-fetcher/with-retries';
 
 const fetcher = new Fetcher();
 
-fetcher.use(new withRetries(5));
+fetcher.use(new withRetries());
 
 export default fetcher;
