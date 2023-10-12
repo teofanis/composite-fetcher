@@ -209,8 +209,8 @@ importers:
         version: 1.10.14(eslint@8.49.0)
     devDependencies:
       '@next/eslint-plugin-next':
-        specifier: ^13.5.3
-        version: 13.5.3
+        specifier: ^13.5.4
+        version: 13.5.4
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.7.2
         version: 6.7.2(@typescript-eslint/parser@6.7.4)(eslint@8.49.0)(typescript@5.2.2)
@@ -1843,6 +1843,7 @@ packages:
     resolution: {integrity: sha512-lbZOoEjzSuTtpk9UgV9rOmxYw+PsSfNR+00mZcInqooiDMZ1u+RqT1YQYLsEZPW1kumZoQe5+exkCBtZ2xn0uw==}
     dependencies:
       glob: 7.1.7
+    dev: false
 
   /@next/eslint-plugin-next@13.5.4:
     resolution: {integrity: sha512-vI94U+D7RNgX6XypSyjeFrOzxGlZyxOplU0dVE5norIfZGn/LDjJYPHdvdsR5vN1eRtl6PDAsOHmycFEOljK5A==}
