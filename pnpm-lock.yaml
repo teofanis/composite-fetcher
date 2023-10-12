@@ -92,8 +92,8 @@ importers:
         specifier: ^18.2.22
         version: 18.2.22
       '@types/react-dom':
-        specifier: ^18.0.7
-        version: 18.2.7
+        specifier: ^18.2.13
+        version: 18.2.13
       es-abstract:
         specifier: ^1.22.2
         version: 1.22.2
@@ -265,8 +265,8 @@ importers:
         specifier: ^18.2.22
         version: 18.2.22
       '@types/react-dom':
-        specifier: ^18.2.0
-        version: 18.2.7
+        specifier: ^18.2.13
+        version: 18.2.13
       eslint:
         specifier: ^8.49.0
         version: 8.49.0
@@ -2310,6 +2310,12 @@ packages:
 
   /@types/prop-types@15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
+
+  /@types/react-dom@18.2.13:
+    resolution: {integrity: sha512-eJIUv7rPP+EC45uNYp/ThhSpE16k22VJUknt5OLoH9tbXoi8bMhwLf5xRuWMywamNbWzhrSmU7IBJfPup1+3fw==}
+    dependencies:
+      '@types/react': 18.2.22
+    dev: true
 
   /@types/react-dom@18.2.7:
     resolution: {integrity: sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==}
