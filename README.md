@@ -20,7 +20,7 @@ A simple logging plugin for the Composite Fetcher.
 
 ### With Retries
 A simple fetcher core plugin to handle and retry failed requests
-- [Read more about With Logging](https://github.com/teofanis/composite-fetcher/blob/main/packages/with-retries/README.md)
+- [Read more about With Retries](https://github.com/teofanis/composite-fetcher/blob/main/packages/with-retries/README.md)
 
 ## Installation
 
