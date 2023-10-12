@@ -341,6 +341,9 @@ importers:
       '@composite-fetcher/core':
         specifier: workspace:^
         version: link:../core
+      isomorphic-fetch:
+        specifier: ^3.0.0
+        version: 3.0.0(encoding@0.1.13)
     devDependencies:
       '@composite-fetcher/eslint-config':
         specifier: workspace:*
@@ -360,9 +363,6 @@ importers:
       fetch-mock:
         specifier: ^9.11.0
         version: 9.11.0
-      isomorphic-fetch:
-        specifier: ^3.0.0
-        version: 3.0.0(encoding@0.1.13)
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.8.0)(ts-node@10.9.1)
