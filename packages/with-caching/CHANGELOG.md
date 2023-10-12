@@ -1,5 +1,11 @@
 # @composite-fetcher/with-caching
 
+## 0.2.1
+
+### Patch Changes
+
+- [#67](https://github.com/teofanis/composite-fetcher/pull/67) [`8671216`](https://github.com/teofanis/composite-fetcher/commit/86712160dacba0a4f966e604e3bc9c5e13fe2d02) Thanks [@teofanis](https://github.com/teofanis)! - test(with-caching): add test for failed responses
+
 ## 0.2.0
 
 ### Minor Changes
