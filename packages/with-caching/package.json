@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/with-caching",
   "description": "withCaching is a simple fetcher core plugin to manage request caching with different drivers",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",

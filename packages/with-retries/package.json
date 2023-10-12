@@ -1,7 +1,7 @@
 {
   "name": "@composite-fetcher/with-retries",
   "description": "A fetcher core plugin to handle and retry failed requests",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Teofanis Papadopulos",
   "type": "module",
   "main": "./dist/index.js",
