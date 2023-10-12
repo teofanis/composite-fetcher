@@ -18,6 +18,10 @@ A simple fetcher core plugin to manage request caching with different drivers.
 A simple logging plugin for the Composite Fetcher.
 - [Read more about With Logging](https://github.com/teofanis/composite-fetcher/blob/main/packages/with-logging/README.md)
 
+### With Retries
+A simple fetcher core plugin to handle and retry failed requests
+- [Read more about With Logging](https://github.com/teofanis/composite-fetcher/blob/main/packages/with-retries/README.md)
+
 ## Installation
 
 To install the core package:
@@ -36,4 +40,10 @@ To install the logging plugin:
 
 ```bash
 npm install @composite-fetcher/with-logging
+```
+
+To install the retries plugin:
+
+```bash
+npm install @composite-fetcher/with-retries
 ```
