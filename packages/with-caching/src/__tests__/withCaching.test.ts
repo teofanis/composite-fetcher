@@ -31,6 +31,24 @@ describe('Integration Tests: withCachingPlugin', () => {
     });
   });
 
+  it('should not cache failed requests', async () => {
+    // Mock a failed request with a 400 status code
+    fetchMock.getOnce('*', 400, {
+      overwriteRoutes: true,
+    });
+
+    try {
+      await fetcher.fetch('https://example.com');
+    } catch (error) {
+      // We expect an error since the request failed
+    }
+
+    const cacheKey = 'GET-https://example.com/?-';
+    const cached = await testCacheDriver.has(cacheKey);
+
+    expect(cached).toBe(false); // Ensure the failed request was not cached
+  });
+
   it('should cache responses on successful requests', async () => {
     fetchMock.get('https://example.com', 200);
 

@@ -1,0 +1,35 @@
+# WithRetries Plugin
+
+The `withRetries` plugin enhances the reliability of your fetch operations by automatically retrying failed requests. This can be particularly useful in scenarios where transient network issues might cause requests to fail temporarily.
+
+## How it Works
+
+The `withRetries` plugin monitors the response of each fetch request. If a request fails, the plugin will automatically retry the request for a specified number of times until it succeeds or the maximum number of retries is reached.
+
+## Lifecycle:
+- `onPostRequest`: After receiving a response, if the response is not successful and the request does not have the `x-fetcher-no-retry` header, the plugin will retry the request.
+
+## Plugin Options
+
+The `withRetries` plugin offers the following options:
+
+- `defaultMaxRetries`: Specifies the default maximum number of retries for each request. Default is 3.
+
+You can use the following custom headers for more granular control per request:
+- `x-fetcher-no-retry`: If present, the plugin will not retry the request, regardless of the response.
+- `x-fetcher-retry-times`: Specifies the maximum number of retries for the request.
+
+## Usage:
+
+```js copy
+import { Fetcher } from '@composite-fetcher/core';
+import withRetriesPlugin from '@composite-fetcher/with-retries';
+
+const fetcher = new Fetcher();
+
+const retriesPlugin = new withRetriesPlugin(5);  // retry up to 5 times by default
+fetcher.use([retriesPlugin]);
+
+fetcher.fetch('https://example.com/api/...')
+  .then(response => { /* handle response */ })
+  .catch(error => { /* handle error */ });

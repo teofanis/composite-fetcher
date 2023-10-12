@@ -13,8 +13,16 @@
       "path": "packages/with-caching"
     },
     {
+      "name": "withRetries Plugin",
+      "path": "packages/with-retries"
+    },
+    {
       "name": "Docs",
       "path": "apps/docs"
+    },
+     {
+      "name": "Examples",
+      "path": "apps/examples"
     },
     {
       "name": "Utils",

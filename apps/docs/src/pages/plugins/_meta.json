@@ -1,4 +1,5 @@
 {
   "with-caching": "withCaching",
-  "with-logging": "withLogging"
+  "with-logging": "withLogging",
+  "with-retries": "withRetries"
 }

@@ -1,7 +1,5 @@
 {
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "extends": "@composite-fetcher/tsconfig/nextjs.json",
   "compilerOptions": {
     "outDir": "dist",
@@ -11,12 +9,10 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
-  "include": [
-    "src",
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "theme.config.jsx"
-  ]
+  "include": ["src", "next-env.d.ts", ".next/types/**/*.ts"]
 }
