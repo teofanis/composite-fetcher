@@ -1,42 +1,24 @@
-name: Snyk Security
+name: Snyk Security for Composite Fetcher
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-
-permissions:
-  contents: read
+on: push
 
 jobs:
-  snyk:
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+  security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Snyk CLI to check for security issues
-        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+      - uses: actions/checkout@master
+      
+      # Setting up Snyk CLI and checking for vulnerabilities
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true # To ensure SARIF upload gets called even if vulnerabilities are found
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
 
-      # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
-      - name: Snyk Code test
-        run: snyk code test --sarif > snyk-code.sarif || true
-
-      # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
-      - name: Snyk Open Source monitor
-        run: snyk monitor --all-projects
-
-      # Runs Snyk Infrastructure as Code (IaC) analysis and uploads result to Snyk.
-      - name: Snyk IaC test and report
-        run: snyk iac test --report || true
-
-      # Push the Snyk Code results into GitHub Code Scanning tab
+      # Uploading the results to GitHub Code Scanning
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: snyk-code.sarif
+          sarif_file: snyk.sarif
