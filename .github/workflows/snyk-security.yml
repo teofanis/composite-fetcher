@@ -8,10 +8,14 @@ jobs:
     steps:
       - uses: actions/checkout@master
       
-      # Install dependencies
-      - name: Install dependencies
-        run: npm install
+       # Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
+      # Install dependencies using pnpm
+      - name: Install dependencies
+        run: pnpm install
+        
       # Setting up Snyk CLI and checking for vulnerabilities
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
