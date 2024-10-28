@@ -44,7 +44,7 @@
       "path": "@commitlint/cz-commitlint"
     }
   },
-  "packageManager": "pnpm@8.6.10",
+  "packageManager": "pnpm@9.12.3",
   "dependencies": {
     "tsup": "^7.2.0"
   }
