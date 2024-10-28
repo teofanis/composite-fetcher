@@ -5,8 +5,8 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.fixAll.format": true
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.format": "explicit"
   },
   "[json][jsonc][yaml]": {
     "editor.formatOnSave": true,
